@@ -6,6 +6,7 @@ from containers import Container
 from user.application.user_service import UserService
 from dependency_injector.wiring import Provide, inject
 from common.auth import get_current_user, get_admin_user, CurrentUser
+from datetime import datetime
 
 
 router = APIRouter(prefix="/users")
@@ -25,8 +26,8 @@ class UserResponse(BaseModel):
     id: str
     name: str
     email: EmailStr
-    created_at: str
-    updated_at: str
+    created_at: datetime
+    updated_at: datetime
 
 
 class GetUsersResponse(BaseModel):
