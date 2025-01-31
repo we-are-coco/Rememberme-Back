@@ -14,7 +14,7 @@ class ScreenshotResponse(BaseModel):
     id: str
     user_id: str
     title: str
-    category: str
+    category_id: str
     description: str
     url: str
     start_date: datetime
@@ -39,7 +39,7 @@ class CreateScreenshotBody(BaseModel):
 def create_screenshot(
         current_user: Annotated[CurrentUser, Depends(get_current_user)],
         body: CreateScreenshotBody,
-        screenshot_service=Provide[Container.screenshot_service]
+        screenshot_service: ScreenshotService = Depends(Provide[Container.screenshot_service])
 ) -> ScreenshotResponse:
     screenshot = screenshot_service.create_screenshot(
         current_user.id,
@@ -74,10 +74,11 @@ def get_screenshots(
         page,
         items_per_page
     )
+    screenshot_responses = [asdict(screenshot) for screenshot in screenshots]
     response = GetScreenshotsResponse(
         total_count=total_count,
         page=page,
-        screenshots=screenshots
+        screenshots=screenshot_responses
     )
     return response
 
@@ -135,14 +136,14 @@ def delete_screenshot(
 @inject
 def get_screenshot_by_category(
         current_user: Annotated[CurrentUser, Depends(get_current_user)],
-        category: str,
+        category_name: str,
         page: int = 1,
         items_per_page: int = 10,
         screenshot_service: ScreenshotService = Depends(Provide[Container.screenshot_service])
 ) -> GetScreenshotsResponse:
     total_count, screenshots = screenshot_service.get_screenshot_by_category(
         current_user.id,
-        category,
+        category_name,
         page,
         items_per_page
     )

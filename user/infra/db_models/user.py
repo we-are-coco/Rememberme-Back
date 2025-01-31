@@ -5,7 +5,7 @@ from database import Base
 
 
 class User(Base):
-    __tablename__ = "User"
+    __tablename__ = "user"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True)
     name: Mapped[str] = mapped_column(String(32), nullable=False)

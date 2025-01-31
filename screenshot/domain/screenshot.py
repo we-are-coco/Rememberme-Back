@@ -15,7 +15,7 @@ class Screenshot:
     id: str
     user_id: str
     title: str
-    category: Category
+    category_id: str
     description: str
     url: str
     start_date: datetime

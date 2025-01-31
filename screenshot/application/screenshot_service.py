@@ -13,11 +13,11 @@ class ScreenshotService:
 
     def get_screenshots(
             self,
-            screenshot_id: str,
+            user_id: str,
             page: int,
             items_per_page: int
     ) -> tuple[int, list[Screenshot]]:
-        return self.screenshot_repo.get_screenshots(screenshot_id, page, items_per_page)
+        return self.screenshot_repo.get_screenshots(user_id, page, items_per_page)
     
     def get_screenshot(
             self,
@@ -30,7 +30,7 @@ class ScreenshotService:
             self,
             user_id: str,
             title: str,
-            category: Category,
+            category_id: str,
             description: str,
             url: str,
             start_date: datetime,
@@ -41,14 +41,18 @@ class ScreenshotService:
             id=self.ulid.generate(),
             title=title,
             description=description,
-            category=category,
+            category_id=category_id,
             url=url,
             start_date=start_date,
             end_date=end_date,
             price=price,
             user_id=user_id,
+            created_at=datetime.now(),
+            updated_at=datetime.now()
         )
-        return self.screenshot_repo.save(user_id, screenshot)
+
+        self.screenshot_repo.save(user_id, screenshot)
+        return screenshot
     
     def update_screenshot(
             self,
@@ -82,13 +86,13 @@ class ScreenshotService:
     def get_screenshot_by_category(
             self,
             user_id: str,
-            category: Category,
+            category_name: str,
             page: int,
             items_per_page: int
     ) -> tuple[int, list[Screenshot]]:
         return self.screenshot_repo.get_screenshot_by_category(
             user_id, 
-            category, 
+            category_name, 
             page,
             items_per_page
         )
