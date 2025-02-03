@@ -39,7 +39,7 @@ class ScreenshotRepository(IScreenshotRepository):
                 raise HTTPException(status_code=422, detail="Screenshot not found")
             return ScreenshotVO(**row_to_dict(screenshot))
     
-    def save(self, user_id: str, screenshot_vo: ScreenshotVO) -> Screenshot:
+    def save(self, user_id: str, screenshot_vo: ScreenshotVO):
         with SessionLocal() as db:
             category: Category = (
                 db.query(Category)
@@ -62,7 +62,7 @@ class ScreenshotRepository(IScreenshotRepository):
             db.commit()
             
     
-    def update(self, user_id: str, screenshot_vo: ScreenshotVO) -> Screenshot:
+    def update(self, user_id: str, screenshot_vo: ScreenshotVO):
         with SessionLocal() as db:
             screenshot = (
                 db.query(Screenshot)
@@ -119,6 +119,11 @@ class ScreenshotRepository(IScreenshotRepository):
             screenshot_vos = [ScreenshotVO(**row_to_dict(screenshot)) for screenshot in screenshots]
             return total_count, screenshot_vos
         
-    def upload_screenshot_image(self, user_id: str, file: UploadFile):
+    def upload_screenshot_image(
+            self, 
+            user_id: str, 
+            file: UploadFile
+        ) -> ScreenshotVO:
         # todo: upload file to azure blob storage file.file
-        return { "image": f"{file.filename}" }
+        
+        return "https://example.com/image.jpg"

@@ -4,12 +4,14 @@ from screenshot.domain.screenshot import Screenshot, Category
 from ulid import ULID
 from dependency_injector.wiring import inject
 from datetime import datetime
+from utils.ai import AImodule
 
 
 class ScreenshotService:
     @inject
-    def __init__(self, screenshot_repo: IScreenshotRepository):
+    def __init__(self, screenshot_repo: IScreenshotRepository, ai_module: AImodule):
         self.screenshot_repo = screenshot_repo
+        self.ai_module = ai_module
         self.ulid = ULID()
 
     def get_screenshots(
@@ -110,5 +112,23 @@ class ScreenshotService:
             self,
             user_id: str,
             file: UploadFile
-    ):
-        return self.screenshot_repo.upload_screenshot_image(user_id, file)
+    ) -> Screenshot:
+        url = self.screenshot_repo.upload_screenshot_image(user_id, file)
+        analyze_result = self.ai_module.analyze_image(file.file)
+
+        screenshot = Screenshot(
+            id=None,
+            title=analyze_result.get("type", None),
+            description=analyze_result.get("description", None),
+            category_id=analyze_result.get("category", None),
+            url=url,
+            start_date=analyze_result.get("start_date", None),
+            end_date=analyze_result.get("end_date", None),
+            price=analyze_result.get("price", None),
+            code=analyze_result.get("code", None),
+            user_id=user_id,
+            created_at=None,
+            updated_at=None,
+        )
+        return screenshot
+        

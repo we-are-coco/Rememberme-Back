@@ -3,9 +3,12 @@ import base64
 from openai import AzureOpenAI  
 import re
 import os
-from dotenv import load_dotenv
 from pathlib import Path
+from typing import BinaryIO
+from config import get_settings
 
+
+settings = get_settings()
 
 class AImodule:
     def __init__(self, subscription_key=None):
@@ -14,7 +17,7 @@ class AImodule:
             self.subscription_key = subscription_key
         else:
             # .env 파일에서 API 키 가져오기
-            self.subscription_key = os.getenv('AZURE_API_KEY')
+            self.subscription_key = settings.azure_api_key
             if not self.subscription_key:
                 self.subscription_key = input("Azure OpenAI API 키를 입력하세요: ")
                 
@@ -45,8 +48,8 @@ class AImodule:
             print("지원되지 않는 데이터 형식입니다.")
             return None
 
-    def call_azure_api(self, prompt: str, image: str) -> str:
-        encoded_image = base64.b64encode(open(image, 'rb').read()).decode('ascii')
+    def call_azure_api(self, prompt: str, image: BinaryIO) -> str:
+        encoded_image = base64.b64encode(image.read()).decode('ascii')
         messages = [
             {
                 "role": "user",
@@ -76,7 +79,7 @@ class AImodule:
 
         return completion.choices[0].message.content
 
-    def analyze_image(self, image: str) -> str:
+    def analyze_image(self, image: BinaryIO) -> str:
         unified_prompt = """
         You are an expert image analyzer and information extractor specialized in schedule-related images. Please analyze the provided image and perform the following tasks:
 
@@ -97,6 +100,7 @@ class AImodule:
                  "item": "물건 혹은 서비스 이름",
                  "end_date": "YYYY-MM-DD HH:MM",
                  "code": "바코드 혹은 시리얼 번호",
+                 "price": "가격(float)",
                  "description": "내용을 간략하게 번역하여 작성"
              }
 
@@ -161,17 +165,3 @@ class AImodule:
         answer_json = self.extract_json_from_string(answer)
 
         return answer_json
-    
-if __name__ == "__main__":
-    load_dotenv()
-    from PIL import Image
-    import matplotlib.pyplot as plt
-
-    image_path = "testdata/italy_train2.webp"
-    image = Image.open(image_path)
-    plt.imshow(image)
-    plt.axis('off')
-    plt.show()
-    ai_module = AImodule()  # AImodule 인스턴스 생성
-    result = ai_module.analyze_image(image_path)  # 인스턴스를 통해 메서드 호출
-    print(result)

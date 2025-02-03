@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     database_host: str
     database_name: str
     jwt_secret: str
+    azure_api_key: str
 
 
 @lru_cache
