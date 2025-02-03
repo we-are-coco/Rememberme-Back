@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+
+from fastapi import UploadFile
 from screenshot.domain.screenshot import Screenshot
 
 class IScreenshotRepository(ABC):
@@ -30,4 +32,8 @@ class IScreenshotRepository(ABC):
         page: int,
         items_per_page: int
     ) -> tuple[int, list[Screenshot]]:
+        raise NotImplementedError
+    
+    @abstractmethod
+    def upload_screenshot_image(self, user_id: str, file: UploadFile):
         raise NotImplementedError

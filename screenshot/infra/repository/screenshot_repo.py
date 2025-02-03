@@ -4,7 +4,7 @@ from sqlalchemy.orm import joinedload
 from screenshot.domain.screenshot import Screenshot as ScreenshotVO
 from database import SessionLocal
 from utils.db_utils import row_to_dict
-from fastapi import HTTPException
+from fastapi import HTTPException, UploadFile
 
 
 class ScreenshotRepository(IScreenshotRepository):
@@ -56,6 +56,7 @@ class ScreenshotRepository(IScreenshotRepository):
                 start_date=screenshot_vo.start_date,
                 end_date=screenshot_vo.end_date,
                 price=screenshot_vo.price,
+                code=screenshot_vo.code,
             )
             db.add(screenshot)
             db.commit()
@@ -78,6 +79,7 @@ class ScreenshotRepository(IScreenshotRepository):
             screenshot.start_date = screenshot_vo.start_date
             screenshot.end_date = screenshot_vo.end_date
             screenshot.price = screenshot_vo.price
+            screenshot.code = screenshot_vo.code
             db.add(screenshot)
             db.commit()
     
@@ -116,3 +118,7 @@ class ScreenshotRepository(IScreenshotRepository):
             screenshots = query.offset((page - 1) * items_per_page).limit(items_per_page).all()
             screenshot_vos = [ScreenshotVO(**row_to_dict(screenshot)) for screenshot in screenshots]
             return total_count, screenshot_vos
+        
+    def upload_screenshot_image(self, user_id: str, file: UploadFile):
+        # todo: upload file to azure blob storage file.file
+        return { "image": f"{file.filename}" }

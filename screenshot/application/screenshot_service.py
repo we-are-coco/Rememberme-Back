@@ -1,3 +1,4 @@
+from fastapi import UploadFile
 from screenshot.domain.repository.screenshot_repo import IScreenshotRepository
 from screenshot.domain.screenshot import Screenshot, Category
 from ulid import ULID
@@ -36,6 +37,7 @@ class ScreenshotService:
             start_date: datetime,
             end_date: datetime,
             price: float,
+            code: str,
     ) -> Screenshot:
         screenshot = Screenshot(
             id=self.ulid.generate(),
@@ -46,6 +48,7 @@ class ScreenshotService:
             start_date=start_date,
             end_date=end_date,
             price=price,
+            code=code,
             user_id=user_id,
             created_at=datetime.now(),
             updated_at=datetime.now()
@@ -60,18 +63,24 @@ class ScreenshotService:
             screenshot_id: str,
             image: str | None = None,
             title: str | None = None,
+            price: float | None = None,
+            code: str | None = None,
             description: str | None = None,
-            category: Category | None = None,
+            category_id: str | None = None,
     ) -> Screenshot:
         screenshot = self.screenshot_repo.find_by_id(user_id, screenshot_id)
         if title:
             screenshot.title = title
         if description:
             screenshot.description = description
-        if category:
-            screenshot.category = category
+        if category_id:
+            screenshot.category_id = category_id
         if image:
-            screenshot.image = image
+            screenshot.url = image
+        if price:
+            screenshot.price = price
+        if code:
+            screenshot.code = code
         
         return self.screenshot_repo.update(user_id, screenshot)
     
@@ -96,3 +105,10 @@ class ScreenshotService:
             page,
             items_per_page
         )
+    
+    def upload_screenshot_image(
+            self,
+            user_id: str,
+            file: UploadFile
+    ):
+        return self.screenshot_repo.upload_screenshot_image(user_id, file)

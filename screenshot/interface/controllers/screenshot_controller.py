@@ -1,5 +1,5 @@
 from dataclasses import asdict
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile
 from pydantic import BaseModel, Field
 from dependency_injector.wiring import inject, Provide
 from typing import Annotated
@@ -20,6 +20,7 @@ class ScreenshotResponse(BaseModel):
     start_date: datetime
     end_date: datetime
     price: float
+    code: str
     created_at: datetime
     updated_at: datetime
 
@@ -32,6 +33,18 @@ class CreateScreenshotBody(BaseModel):
     start_date: datetime | None = Field(default=None)
     end_date: datetime | None = Field(default=None)
     price: float | None = Field(default=None)
+    code: str | None = Field(default=None)
+
+
+@router.post("/upload")
+@inject
+def upload_screenshot(
+        current_user: Annotated[CurrentUser, Depends(get_current_user)],
+        screenshot_service: ScreenshotService = Depends(Provide[Container.screenshot_service]),
+        file: UploadFile | None = None
+):
+    response = screenshot_service.upload_screenshot_image(current_user.id, file)
+    return response
 
 
 @router.post("", status_code=201, response_model=ScreenshotResponse)
@@ -49,7 +62,8 @@ def create_screenshot(
         body.url,
         body.start_date,
         body.end_date,
-        body.price
+        body.price,
+        body.code
     )
     response = asdict(screenshot)
     return response
@@ -116,7 +130,8 @@ def update_screenshot(
         body.url,
         body.title,
         body.description,
-        body.category
+        body.category,
+        body.code,
     )
     response = asdict(screenshot)
     return response

@@ -29,6 +29,7 @@ class Screenshot(Base):
     start_date = Column(DateTime, nullable=True)
     end_date = Column(DateTime, nullable=True)
     price = Column(Integer, nullable=True)
+    code = Column(Text, nullable=True)
     category_id = Column(String(36), ForeignKey(Category.id), nullable=False, index=True)
     created_at = Column(DateTime, nullable=False, default=func.now())
     updated_at = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())

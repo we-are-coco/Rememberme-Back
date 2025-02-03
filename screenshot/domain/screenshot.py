@@ -21,5 +21,6 @@ class Screenshot:
     start_date: datetime
     end_date: datetime
     price: float
+    code: str
     created_at: datetime
     updated_at: datetime
