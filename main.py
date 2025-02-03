@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 from containers import Container
 from user.interface.controllers.user_controller import router as user_router
@@ -11,3 +12,8 @@ app.include_router(screenshot_router)
 @app.get("/")
 def hello():
     return {"Hello": "World"}
+
+log_config = uvicorn.config.LOGGING_CONFIG
+log_config["formatters"]["access"]["fmt"] = "%(asctime)s - %(levelname)s - %(message)s"
+log_config["formatters"]["default"]["fmt"] = "%(asctime)s - %(levelname)s - %(message)s"
+uvicorn.run(app, host="0.0.0.0", port=8000, log_config=log_config)
