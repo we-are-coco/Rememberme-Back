@@ -1,8 +1,15 @@
 import uvicorn
+import os
 from fastapi import FastAPI
 from containers import Container
 from user.interface.controllers.user_controller import router as user_router
 from screenshot.interface.controllers.screenshot_controller import router as screenshot_router
+
+def create_temp_directory():
+    if not os.path.exists("temp"):
+        os.makedirs("temp")
+
+create_temp_directory()
 
 app = FastAPI()
 app.container = Container()

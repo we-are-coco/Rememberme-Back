@@ -48,8 +48,8 @@ class AImodule:
             print("지원되지 않는 데이터 형식입니다.")
             return None
 
-    def call_azure_api(self, prompt: str, image: BinaryIO) -> str:
-        encoded_image = base64.b64encode(image.read()).decode('ascii')
+    def call_azure_api(self, prompt: str, image: str) -> str:
+        encoded_image = base64.b64encode(open(image, 'rb').read()).decode('ascii')
         messages = [
             {
                 "role": "user",
@@ -79,7 +79,7 @@ class AImodule:
 
         return completion.choices[0].message.content
 
-    def analyze_image(self, image: BinaryIO) -> str:
+    def analyze_image(self, image: str) -> str:
         unified_prompt = """
         You are an expert image analyzer and information extractor specialized in schedule-related images. Please analyze the provided image and perform the following tasks:
 

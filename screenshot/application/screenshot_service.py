@@ -1,4 +1,3 @@
-from fastapi import UploadFile
 from screenshot.domain.repository.screenshot_repo import IScreenshotRepository
 from screenshot.domain.screenshot import Screenshot, Category
 from ulid import ULID
@@ -6,6 +5,8 @@ from dependency_injector.wiring import inject
 from datetime import datetime
 from utils.ai import AImodule
 from screenshot.infra.storage.azure_blob import AzureBlobStorage
+import os
+import logging
 
 
 class ScreenshotService:
@@ -117,6 +118,11 @@ class ScreenshotService:
     ) -> Screenshot:
         url = self.storage.upload_image(file_path, f'{user_id}/{file_path}')
         analyze_result = self.ai_module.analyze_image(file_path)
+
+        try:
+            os.remove(file_path)
+        except Exception as e:
+            logging.error(f"Failed to remove file: {file_path}")
 
         screenshot = Screenshot(
             id=None,
