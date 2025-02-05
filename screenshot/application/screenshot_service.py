@@ -6,7 +6,7 @@ from datetime import datetime
 from utils.ai import AImodule
 from screenshot.infra.storage.azure_blob import AzureBlobStorage
 import os
-import logging
+from utils.logger import logger
 
 
 class ScreenshotService:
@@ -122,7 +122,7 @@ class ScreenshotService:
         try:
             os.remove(file_path)
         except Exception as e:
-            logging.error(f"Failed to remove file: {file_path}")
+            logger.error(f"Failed to remove file: {file_path}")
 
         screenshot = Screenshot(
             id=None,
