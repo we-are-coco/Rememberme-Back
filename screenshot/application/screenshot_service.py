@@ -5,6 +5,7 @@ from ulid import ULID
 from dependency_injector.wiring import inject
 from datetime import datetime
 from utils.ai import AImodule
+from screenshot.infra.storage.azure_blob import AzureBlobStorage
 
 
 class ScreenshotService:
@@ -12,6 +13,7 @@ class ScreenshotService:
     def __init__(self, screenshot_repo: IScreenshotRepository, ai_module: AImodule):
         self.screenshot_repo = screenshot_repo
         self.ai_module = ai_module
+        self.storage = AzureBlobStorage()
         self.ulid = ULID()
 
     def get_screenshots(
@@ -111,10 +113,10 @@ class ScreenshotService:
     def upload_screenshot_image(
             self,
             user_id: str,
-            file: UploadFile
+            file_path: str,
     ) -> Screenshot:
-        url = self.screenshot_repo.upload_screenshot_image(user_id, file)
-        analyze_result = self.ai_module.analyze_image(file.file)
+        url = self.storage.upload_image(file_path, f'{user_id}/{file_path}')
+        analyze_result = self.ai_module.analyze_image(file_path)
 
         screenshot = Screenshot(
             id=None,

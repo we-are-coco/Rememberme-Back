@@ -7,6 +7,7 @@ from common.auth import CurrentUser, get_current_user
 from containers import Container
 from screenshot.application.screenshot_service import ScreenshotService
 from datetime import datetime
+import shutil
 
 router = APIRouter(prefix="/screenshot")
 
@@ -43,7 +44,11 @@ def upload_screenshot(
         screenshot_service: ScreenshotService = Depends(Provide[Container.screenshot_service]),
         file: UploadFile | None = None
 ):
-    response = screenshot_service.upload_screenshot_image(current_user.id, file)
+    file_path = f"temp/{file.filename}"
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    response = screenshot_service.upload_screenshot_image(current_user.id, file_path)
     return response
 
 

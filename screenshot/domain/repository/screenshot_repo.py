@@ -33,7 +33,3 @@ class IScreenshotRepository(ABC):
         items_per_page: int
     ) -> tuple[int, list[Screenshot]]:
         raise NotImplementedError
-    
-    @abstractmethod
-    def upload_screenshot_image(self, user_id: str, file: UploadFile):
-        raise NotImplementedError

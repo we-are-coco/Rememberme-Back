@@ -118,12 +118,3 @@ class ScreenshotRepository(IScreenshotRepository):
             screenshots = query.offset((page - 1) * items_per_page).limit(items_per_page).all()
             screenshot_vos = [ScreenshotVO(**row_to_dict(screenshot)) for screenshot in screenshots]
             return total_count, screenshot_vos
-        
-    def upload_screenshot_image(
-            self, 
-            user_id: str, 
-            file: UploadFile
-        ) -> ScreenshotVO:
-        # todo: upload file to azure blob storage file.file
-        
-        return "https://example.com/image.jpg"

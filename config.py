@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     database_name: str
     jwt_secret: str
     azure_api_key: str
+    azure_storage_connection_string: str
+    azure_blob_container_name: str
 
 
 @lru_cache
