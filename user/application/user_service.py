@@ -6,6 +6,7 @@ from user.domain.user import User
 from fastapi import HTTPException, status
 from utils.crypto import Crypto
 from common.auth import Role, create_access_token
+import requests
 
 
 class UserService:
@@ -16,12 +17,7 @@ class UserService:
         self.crypto = Crypto()
 
     def create_user(self, name: str, email: str, password: str, memo: str|None=None) -> User:
-        _user = None
-        try:
-            _user = self.user_repo.find_by_email(email)
-        except HTTPException as e:
-            if e.status_code != 422:
-                raise e
+        _user = self.user_repo.find_by_email(email)
         if _user:
             raise HTTPException(status_code=422, detail="User already exists")
         now = datetime.now()
@@ -29,7 +25,7 @@ class UserService:
             id=self.ulid.generate(),
             name=name,
             email=email,
-            password=self.crypto.encrypt(password),
+            password=self.crypto.encrypt(password) if password else None,
             memo=memo,
             created_at=now,
             updated_at=now
@@ -39,6 +35,8 @@ class UserService:
     
     def update_user(self, user_id: str, name:str | None = None, password: str | None = None):
         user = self.user_repo.find_by_id(user_id)
+        if not user:
+            raise HTTPException(status_code=422, detail="User not found")
 
         if name:
             user.name = name
@@ -58,9 +56,28 @@ class UserService:
 
     def login(self, email: str, password: str) -> User:
         user = self.user_repo.find_by_email(email)
+        if not user:
+            raise HTTPException(status_code=422, detail="User not found")
 
         if not self.crypto.verify(password, user.password):
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
         access_token = create_access_token(payload={"user_id": user.id}, role=Role.USER)
         return access_token
+    
+    def kakao_login(self, access_token: str) -> User:
+        headers = {"Authorization": f"Bearer {access_token}"}
+        response = requests.get("https://kapi.kakao.com/v2/user/me", headers=headers)
+        if response.status_code != 200:
+            print('response', response.json())
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+        
+        kakao_user = response.json()
+        email = kakao_user.get("kakao_account", {}).get("email")
+        name = kakao_user.get("kakao_account", {}).get("profile", {}).get("nickname")
+        print('kakao user', kakao_user)
+
+        user = self.user_repo.find_by_email(email)
+        if not user:
+            user = self.create_user(name, email, None)
+        return create_access_token(payload={"user_id": user.id}, role=Role.USER)

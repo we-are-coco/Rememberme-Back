@@ -88,3 +88,13 @@ def login(
 ):
     access_token = user_service.login(form_data.username, form_data.password)
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.get("/auth/kakao")
+@inject
+def kakao_login(
+    access_token: str,
+    user_service: UserService = Depends(Provide[Container.user_service])
+):
+    access_token = user_service.kakao_login(access_token)
+    return {"access_token": access_token, "token_type": "bearer"}

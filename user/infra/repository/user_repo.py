@@ -25,7 +25,7 @@ class UserRepository(IUserRepository):
         with SessionLocal() as db:
             user = db.query(User).filter(User.email == email).first()
         if not user:
-            raise HTTPException(status_code=422, detail="User not found")
+            return None
         return UserVO(**row_to_dict(user))
 
     def get_users(self, page: int, items_per_page: int) -> tuple[int, list[UserVO]]:
@@ -54,7 +54,7 @@ class UserRepository(IUserRepository):
         with SessionLocal() as db:
             user = db.query(User).filter(User.id == user_id).first()
         if not user:
-            raise HTTPException(status_code=422, detail="User not found")
+            return None
         return UserVO(**row_to_dict(user))
     
     def delete(self, user_id):

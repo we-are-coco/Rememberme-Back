@@ -7,7 +7,7 @@ class User:
     id: int
     name: str
     email: str
-    password: str
+    password: str | None
     memo: str | None
     created_at: datetime
     updated_at: datetime
