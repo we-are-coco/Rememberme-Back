@@ -1,10 +1,11 @@
 from screenshot.infra.db_models.screenshot import Screenshot, Category
 from screenshot.domain.repository.screenshot_repo import IScreenshotRepository
 from sqlalchemy.orm import joinedload
+from sqlalchemy import or_
 from screenshot.domain.screenshot import Screenshot as ScreenshotVO
 from database import SessionLocal
 from utils.db_utils import row_to_dict
-from fastapi import HTTPException, UploadFile
+from fastapi import HTTPException
 
 
 class ScreenshotRepository(IScreenshotRepository):
@@ -13,13 +14,25 @@ class ScreenshotRepository(IScreenshotRepository):
             self,
             user_id, 
             page, 
-            items_per_page
+            items_per_page,
+            keywords: list[str],
         ) -> tuple[int, list[ScreenshotVO]]:
         with SessionLocal() as db:
             query = (
                 db.query(Screenshot)
                 .filter(Screenshot.user_id == user_id)
+                .join(Category, Screenshot.category_id == Category.id)
+                .options(joinedload(Screenshot.category))
             )
+            if keywords:
+                keyword_conditions = or_(
+                    *[or_(
+                        Screenshot.title.ilike(f"%{keyword}%"), 
+                        Screenshot.description.ilike(f"%{keyword}%"), 
+                        Category.name.ilike(f"%{keyword}%")
+                    ) for keyword in keywords]
+                )
+                query = query.filter(keyword_conditions)
 
             total_count = query.count()
             screenshots = query.offset((page - 1) * items_per_page).limit(items_per_page).all()

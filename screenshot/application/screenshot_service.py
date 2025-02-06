@@ -21,9 +21,13 @@ class ScreenshotService:
             self,
             user_id: str,
             page: int,
-            items_per_page: int
+            items_per_page: int,
+            search_text: str,
     ) -> tuple[int, list[Screenshot]]:
-        return self.screenshot_repo.get_screenshots(user_id, page, items_per_page)
+        # todo: extract keyword
+        # keywords = self.ai_module.extract_keywords(search_text)
+        keywords = ["신세계", "상품권", "30000원"]
+        return self.screenshot_repo.get_screenshots(user_id, page, items_per_page, keywords)
     
     def get_screenshot(
             self,

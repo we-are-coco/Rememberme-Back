@@ -5,7 +5,7 @@ from screenshot.domain.screenshot import Screenshot
 
 class IScreenshotRepository(ABC):
     @abstractmethod
-    def get_screenshots(self, screenshot_id: str, page: int, items_per_page: int) -> tuple[int, list[Screenshot]]:
+    def get_screenshots(self, screenshot_id: str, page: int, items_per_page: int, keywords: list[str]) -> tuple[int, list[Screenshot]]:
         raise NotImplementedError
 
     @abstractmethod

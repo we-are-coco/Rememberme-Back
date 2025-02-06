@@ -13,6 +13,8 @@ class Category(Base):
     name = Column(String(64), nullable=False, unique=True)
     created_at = Column(DateTime, nullable=False, default=func.now())
     updated_at = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
+
+    screenshots = relationship("Screenshot", back_populates="category")
     
     def __repr__(self):
         return f"<Category(id={self.id}, name={self.name})>"
@@ -33,6 +35,8 @@ class Screenshot(Base):
     category_id = Column(String(36), ForeignKey(Category.id), nullable=False, index=True)
     created_at = Column(DateTime, nullable=False, default=func.now())
     updated_at = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
+
+    category = relationship("Category", back_populates="screenshots")
     
     def __repr__(self):
         return f"<Screenshot(id={self.id}, title={self.title}, description={self.description})>"

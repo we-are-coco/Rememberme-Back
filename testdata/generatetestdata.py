@@ -33,10 +33,10 @@ def create_test_user():
 
 def create_test_category():
     with SessionLocal() as db:
-        for i in range(4):
+        for i,v in enumerate(['상품권', '쿠폰', '승차권', '기타']):
             category = Category(
-                id=f"CategoryID-{str(i).zfill(2)}",
-                name=f"TestCategory{i}",
+                id=f"CategoryID-1{str(i)}",
+                name=v,
                 created_at=datetime.now(),
                 updated_at=datetime.now()
             )

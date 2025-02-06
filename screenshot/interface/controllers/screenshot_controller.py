@@ -18,17 +18,17 @@ class ScreenshotResponse(BaseModel):
     category_id: str
     description: str
     url: str
-    start_date: datetime
-    end_date: datetime
-    price: float
-    code: str
+    start_date: datetime | None
+    end_date: datetime | None
+    price: float | None
+    code: str | None
     created_at: datetime
     updated_at: datetime
 
 
 class CreateScreenshotBody(BaseModel):
     title: str = Field(min_length=1, max_length=64)
-    category: str = Field(min_length=1)
+    category_id: str = Field(min_length=1)
     description: str = Field(min_length=1)
     url: str = Field(min_length=1)
     start_date: datetime | None = Field(default=None)
@@ -62,7 +62,7 @@ def create_screenshot(
     screenshot = screenshot_service.create_screenshot(
         current_user.id,
         body.title,
-        body.category,
+        body.category_id,
         body.description,
         body.url,
         body.start_date,
@@ -86,12 +86,14 @@ def get_screenshots(
         current_user: Annotated[CurrentUser, Depends(get_current_user)],
         page: int = 1,
         items_per_page: int = 10,
+        search_text: str = "",
         screenshot_service: ScreenshotService = Depends(Provide[Container.screenshot_service])
 ) -> GetScreenshotsResponse:
     total_count, screenshots = screenshot_service.get_screenshots(
         current_user.id,
         page,
-        items_per_page
+        items_per_page,
+        search_text,
     )
     screenshot_responses = [asdict(screenshot) for screenshot in screenshots]
     response = GetScreenshotsResponse(

@@ -18,9 +18,11 @@ class Screenshot:
     category_id: str
     description: str
     url: str
-    start_date: datetime
-    end_date: datetime
-    price: float
-    code: str
+    start_date: datetime | None
+    end_date: datetime | None
+    price: float | None
+    code: str | None
     created_at: datetime
     updated_at: datetime
+
+    category: Category | None = None
