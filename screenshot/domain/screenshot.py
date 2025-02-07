@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from datetime import datetime
+from notification.domain.notification import Notification
 
 
 @dataclass
@@ -26,3 +27,4 @@ class Screenshot:
     updated_at: datetime
 
     category: Category | None = None
+    notifications: list["Notification"] | None = None

@@ -27,6 +27,7 @@ class UserService:
             email=email,
             password=self.crypto.encrypt(password) if password else None,
             memo=memo,
+            notifications=[],
             created_at=now,
             updated_at=now
         )

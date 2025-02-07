@@ -14,7 +14,7 @@ class Category(Base):
     created_at = Column(DateTime, nullable=False, default=func.now())
     updated_at = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
 
-    screenshots = relationship("Screenshot", back_populates="category")
+    screenshot = relationship("Screenshot", back_populates="category")
     
     def __repr__(self):
         return f"<Category(id={self.id}, name={self.name})>"
@@ -24,7 +24,7 @@ class Screenshot(Base):
     __tablename__ = "screenshot"
     
     id = Column(String(36), primary_key=True)
-    user_id = Column(String(36), ForeignKey(User.id), nullable=False, index=True)
+    user_id = Column(String(36), ForeignKey("user.id"), nullable=False, index=True)
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=False)
     url = Column(String(2084), nullable=False)
@@ -36,7 +36,8 @@ class Screenshot(Base):
     created_at = Column(DateTime, nullable=False, default=func.now())
     updated_at = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
 
-    category = relationship("Category", back_populates="screenshots")
+    category = relationship("Category", back_populates="screenshot")
+    notifications = relationship("Notification", back_populates="screenshot", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<Screenshot(id={self.id}, title={self.title}, description={self.description})>"

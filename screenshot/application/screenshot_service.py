@@ -40,7 +40,7 @@ class ScreenshotService:
             self,
             user_id: str,
             title: str,
-            category_id: str,
+            category_name: str,
             description: str,
             url: str,
             start_date: datetime,
@@ -48,11 +48,12 @@ class ScreenshotService:
             price: float,
             code: str,
     ) -> Screenshot:
+        category = self.screenshot_repo.find_category_by_name(category_name)
         screenshot = Screenshot(
             id=self.ulid.generate(),
             title=title,
             description=description,
-            category_id=category_id,
+            category_id=category.id,
             url=url,
             start_date=start_date,
             end_date=end_date,

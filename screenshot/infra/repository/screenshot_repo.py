@@ -3,6 +3,7 @@ from screenshot.domain.repository.screenshot_repo import IScreenshotRepository
 from sqlalchemy.orm import joinedload
 from sqlalchemy import or_
 from screenshot.domain.screenshot import Screenshot as ScreenshotVO
+from screenshot.domain.screenshot import Category as CategoryVO
 from database import SessionLocal
 from utils.db_utils import row_to_dict
 from fastapi import HTTPException
@@ -131,3 +132,14 @@ class ScreenshotRepository(IScreenshotRepository):
             screenshots = query.offset((page - 1) * items_per_page).limit(items_per_page).all()
             screenshot_vos = [ScreenshotVO(**row_to_dict(screenshot)) for screenshot in screenshots]
             return total_count, screenshot_vos
+
+    def find_category_by_name(self, category_name: str) -> list[CategoryVO]:
+        with SessionLocal() as db:
+            category = (
+                db.query(Category)
+                .filter(Category.name == category_name)
+                .first()
+            )
+            if not category:
+                raise HTTPException(status_code=422, detail="Category not found")
+            return CategoryVO(**row_to_dict(category))

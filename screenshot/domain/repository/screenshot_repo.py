@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
-from fastapi import UploadFile
-from screenshot.domain.screenshot import Screenshot
+from screenshot.domain.screenshot import Screenshot, Category
 
 class IScreenshotRepository(ABC):
     @abstractmethod
@@ -32,4 +31,8 @@ class IScreenshotRepository(ABC):
         page: int,
         items_per_page: int
     ) -> tuple[int, list[Screenshot]]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def find_category_by_name(self, category_name: str) -> list[Category]:
         raise NotImplementedError

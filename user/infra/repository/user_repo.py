@@ -4,6 +4,7 @@ from user.infra.db_models.user import User
 from database import SessionLocal
 from fastapi import HTTPException
 from utils.db_utils import row_to_dict
+from sqlalchemy.orm import joinedload
 
 
 class UserRepository(IUserRepository):
@@ -23,7 +24,7 @@ class UserRepository(IUserRepository):
         
     def find_by_email(self, email) -> UserVO:
         with SessionLocal() as db:
-            user = db.query(User).filter(User.email == email).first()
+            user = db.query(User).options(joinedload(User.notifications)).filter(User.email == email).first()
         if not user:
             return None
         return UserVO(**row_to_dict(user))
