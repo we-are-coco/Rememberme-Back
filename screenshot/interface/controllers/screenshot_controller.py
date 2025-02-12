@@ -17,7 +17,15 @@ class ScreenshotResponse(BaseModel):
     title: str
     category_id: str
     description: str
+    brand: str | None
+    type: str | None
     url: str
+    date: str | None
+    time: str | None
+    from_location: str | None
+    to_location: str | None
+    location: str | None
+    details: str | None
     start_date: datetime | None
     end_date: datetime | None
     price: float | None
@@ -31,6 +39,33 @@ class CreateScreenshotBody(BaseModel):
     category_id: str = Field(min_length=1)
     description: str = Field(min_length=1)
     url: str = Field(min_length=1)
+    brand: str | None = Field(default=None)
+    type: str | None = Field(default=None)
+    date: str | None = Field(default=None)
+    time: str | None = Field(default=None)
+    from_location: str | None = Field(default=None)
+    to_location: str | None = Field(default=None)
+    location: str | None = Field(default=None)
+    details: str | None = Field(default=None)
+    start_date: datetime | None = Field(default=None)
+    end_date: datetime | None = Field(default=None)
+    price: float | None = Field(default=None)
+    code: str | None = Field(default=None)
+
+
+
+class UpdateScreenshotBody(BaseModel):
+    title: str | None = Field(default=None, min_length=1, max_length=64)
+    category_id: str | None = Field(default=None, min_length=1)
+    description: str | None = Field(default=None, min_length=1)
+    brand: str | None = Field(default=None)
+    type: str | None = Field(default=None)
+    date: str | None = Field(default=None)
+    time: str | None = Field(default=None)
+    from_location: str | None = Field(default=None)
+    to_location: str | None = Field(default=None)
+    location: str | None = Field(default=None)
+    details: str | None = Field(default=None)
     start_date: datetime | None = Field(default=None)
     end_date: datetime | None = Field(default=None)
     price: float | None = Field(default=None)
@@ -61,14 +96,7 @@ def create_screenshot(
 ) -> ScreenshotResponse:
     screenshot = screenshot_service.create_screenshot(
         current_user.id,
-        body.title,
-        body.category_id,
-        body.description,
-        body.url,
-        body.start_date,
-        body.end_date,
-        body.price,
-        body.code
+        **body.model_dump()
     )
     response = asdict(screenshot)
     return response
@@ -116,13 +144,6 @@ def get_screenshot(
     return response
 
 
-class UpdateScreenshotBody(BaseModel):
-    title: str | None = Field(default=None, min_length=1, max_length=64)
-    description: str | None = Field(default=None, min_length=1)
-    category: str | None = Field(default=None)
-    url: str | None = Field(default=None, min_length=1)
-
-
 @router.put("/{screenshot_id}", response_model=ScreenshotResponse)
 @inject
 def update_screenshot(
@@ -131,17 +152,17 @@ def update_screenshot(
         body: UpdateScreenshotBody,
         screenshot_service: ScreenshotService = Depends(Provide[Container.screenshot_service])
 ) -> ScreenshotResponse:
+    data = body.model_dump()
+    data.pop("created_at", None)
+    data.pop("updated_at", None)
+
     screenshot = screenshot_service.update_screenshot(
         current_user.id,
         screenshot_id,
-        body.url,
-        body.title,
-        body.description,
-        body.category,
-        body.code,
+        **data,
     )
-    response = asdict(screenshot)
-    return response
+    
+    return asdict(screenshot)
 
 
 @router.delete("/{screenshot_id}", status_code=204)

@@ -27,8 +27,8 @@ class ScreenshotService:
     ) -> tuple[int, list[Screenshot]]:
         # todo: extract keyword
         # keywords = self.ai_module.extract_keywords(search_text)
-        keywords = ["신세계", "상품권", "30000원"]
-        return self.screenshot_repo.get_screenshots(user_id, page, items_per_page, keywords)
+        #keywords = ["신세계", "상품권", "30000원"]
+        return self.screenshot_repo.get_screenshots(user_id, page, items_per_page, search_text)
     
     def get_screenshot(
             self,
@@ -41,26 +41,41 @@ class ScreenshotService:
             self,
             user_id: str,
             title: str,
-            category_name: str,
+            category_id: str,
             description: str,
             url: str,
             start_date: datetime,
             end_date: datetime,
             price: float,
             code: str,
+            brand: str,
+            type: str,
+            date: str,
+            time: str,
+            from_location: str,
+            to_location: str,
+            location: str,
+            details: str
     ) -> Screenshot:
-        category = self.screenshot_repo.find_category_by_name(category_name)
         screenshot = Screenshot(
             id=self.ulid.generate(),
             title=title,
             description=description,
-            category_id=category.id,
+            category_id=category_id,
             url=url,
             start_date=start_date,
             end_date=end_date,
             price=price,
             code=code,
             user_id=user_id,
+            brand=brand,
+            type=type,
+            date=date,
+            time=time,
+            from_location=from_location,
+            to_location=to_location,
+            location=location,
+            details=details,
             created_at=datetime.now(),
             updated_at=datetime.now()
         )
@@ -72,28 +87,43 @@ class ScreenshotService:
             self,
             user_id: str,
             screenshot_id: str,
-            image: str | None = None,
+            url: str | None = None,
             title: str | None = None,
             price: float | None = None,
             code: str | None = None,
             description: str | None = None,
             category_id: str | None = None,
+            brand: str | None = None,
+            type: str | None = None,
+            date: str | None = None,
+            time: str | None = None,
+            from_location: str | None = None,
+            to_location: str | None = None,
+            location: str | None = None,
+            details: str | None = None,
+            start_date: datetime | None = None,
+            end_date: datetime | None = None
     ) -> Screenshot:
         screenshot = self.screenshot_repo.find_by_id(user_id, screenshot_id)
-        if title:
-            screenshot.title = title
-        if description:
-            screenshot.description = description
-        if category_id:
-            screenshot.category_id = category_id
-        if image:
-            screenshot.url = image
-        if price:
-            screenshot.price = price
-        if code:
-            screenshot.code = code
-        
-        return self.screenshot_repo.update(user_id, screenshot)
+        screenshot.title = title or screenshot.title
+        screenshot.description = description or screenshot.description
+        screenshot.category_id = category_id or screenshot.category_id
+        screenshot.url = url or screenshot.url
+        screenshot.price = price or screenshot.price
+        screenshot.code = code or screenshot.code
+        screenshot.brand = brand or screenshot.brand
+        screenshot.type = type or screenshot.type
+        screenshot.date = date or screenshot.date
+        screenshot.time = time or screenshot.time
+        screenshot.from_location = from_location or screenshot.from_location
+        screenshot.to_location = to_location or screenshot.to_location
+        screenshot.location = location or screenshot.location
+        screenshot.details = details or screenshot.details
+        screenshot.start_date = start_date or screenshot.start_date
+        screenshot.end_date = end_date or screenshot.end_date
+
+        self.screenshot_repo.update(user_id, screenshot)
+        return screenshot
     
     def delete_screenshot(
             self,

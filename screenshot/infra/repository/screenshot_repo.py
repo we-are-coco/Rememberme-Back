@@ -8,6 +8,7 @@ from category.domain.category import Category as CategoryVO
 from database import SessionLocal
 from utils.db_utils import row_to_dict
 from fastapi import HTTPException
+from dataclasses import asdict
 
 
 class ScreenshotRepository(IScreenshotRepository):
@@ -56,22 +57,27 @@ class ScreenshotRepository(IScreenshotRepository):
     
     def save(self, user_id: str, screenshot_vo: ScreenshotVO):
         with SessionLocal() as db:
-            category: Category = (
-                db.query(Category)
-                .filter(Category.id == screenshot_vo.category_id)
-                .first()
-            )
             screenshot = Screenshot(
                 id=screenshot_vo.id,
                 user_id=user_id,
                 title=screenshot_vo.title,
                 description=screenshot_vo.description,
+                category_id=screenshot_vo.category_id,
                 url=screenshot_vo.url,
-                category_id=category.id,
                 start_date=screenshot_vo.start_date,
                 end_date=screenshot_vo.end_date,
                 price=screenshot_vo.price,
                 code=screenshot_vo.code,
+                brand=screenshot_vo.brand,
+                type=screenshot_vo.type,
+                date=screenshot_vo.date,
+                time=screenshot_vo.time,
+                from_location=screenshot_vo.from_location,
+                to_location=screenshot_vo.to_location,
+                location=screenshot_vo.location,
+                details=screenshot_vo.details,
+                created_at=screenshot_vo.created_at,
+                updated_at=screenshot_vo.updated_at,
             )
             db.add(screenshot)
             db.commit()
@@ -95,6 +101,16 @@ class ScreenshotRepository(IScreenshotRepository):
             screenshot.end_date = screenshot_vo.end_date
             screenshot.price = screenshot_vo.price
             screenshot.code = screenshot_vo.code
+            screenshot.brand = screenshot_vo.brand
+            screenshot.type = screenshot_vo.type
+            screenshot.date = screenshot_vo.date
+            screenshot.time = screenshot_vo.time
+            screenshot.from_location = screenshot_vo.from_location
+            screenshot.to_location = screenshot_vo.to_location
+            screenshot.location = screenshot_vo.location
+            screenshot.details = screenshot_vo.details
+            screenshot.updated_at = screenshot_vo.updated_at
+
             db.add(screenshot)
             db.commit()
     
