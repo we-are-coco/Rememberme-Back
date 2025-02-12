@@ -25,7 +25,7 @@ class GetCategoriesResponse(BaseModel):
     page: int
     users: list[CategoryResponse]
 
-@router.post('/')
+@router.post('')
 @inject
 def create_category(
         category: CreateCategoryBody,
@@ -49,7 +49,7 @@ def update_category(category_id: str, category: dict, category_service: Category
 def delete_category(category_id: str, category_service: CategoryService = Depends(Provide[Container.category_service])):
     return category_service.delete_category(category_id)
 
-@router.get('/')
+@router.get('')
 @inject
 def get_categories(
     page: int = 1,
