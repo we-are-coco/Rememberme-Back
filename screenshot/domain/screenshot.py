@@ -1,14 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 from notification.domain.notification import Notification
-
-
-@dataclass
-class Category:
-    id: str
-    name: str
-    created_at: datetime
-    updated_at: datetime
+from category.domain.category import Category
 
 
 @dataclass

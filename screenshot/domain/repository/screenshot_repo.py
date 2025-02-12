@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
-from screenshot.domain.screenshot import Screenshot, Category
+from screenshot.domain.screenshot import Screenshot
+from category.domain.category import Category
 
 class IScreenshotRepository(ABC):
     @abstractmethod

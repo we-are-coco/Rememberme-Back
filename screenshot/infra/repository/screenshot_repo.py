@@ -1,9 +1,10 @@
-from screenshot.infra.db_models.screenshot import Screenshot, Category
+from screenshot.infra.db_models.screenshot import Screenshot
+from category.infra.db_models.category import Category
 from screenshot.domain.repository.screenshot_repo import IScreenshotRepository
 from sqlalchemy.orm import joinedload
 from sqlalchemy import or_
 from screenshot.domain.screenshot import Screenshot as ScreenshotVO
-from screenshot.domain.screenshot import Category as CategoryVO
+from category.domain.category import Category as CategoryVO
 from database import SessionLocal
 from utils.db_utils import row_to_dict
 from fastapi import HTTPException

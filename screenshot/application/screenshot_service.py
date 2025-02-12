@@ -1,5 +1,6 @@
 from screenshot.domain.repository.screenshot_repo import IScreenshotRepository
-from screenshot.domain.screenshot import Screenshot, Category
+from screenshot.domain.screenshot import Screenshot
+from category.domain.category import Category
 from ulid import ULID
 from dependency_injector.wiring import inject
 from datetime import datetime
