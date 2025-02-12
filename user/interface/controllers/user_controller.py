@@ -69,6 +69,15 @@ def get_users(
     total_count, users = user_service.get_users(page, items_per_page)
     return {"total_count": total_count, "page": page, "users": users}
 
+@router.get("/me", response_model=UserResponse)
+@inject
+def get_user(
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    user_service: UserService = Depends(Provide[Container.user_service])
+) -> UserResponse:
+    user = user_service.get_user(current_user.id)
+    return user
+
 
 @router.delete("", status_code=204)
 @inject

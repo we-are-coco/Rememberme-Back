@@ -52,6 +52,12 @@ class UserService:
         users = self.user_repo.get_users(page, items_per_page)
         return users
     
+    def get_user(self, user_id: str) -> User:
+        user = self.user_repo.find_by_id(user_id)
+        if not user:
+            raise HTTPException(status_code=422, detail="User not found")
+        return user
+    
     def delete_user(self, user_id: str):
         self.user_repo.delete(user_id)
 

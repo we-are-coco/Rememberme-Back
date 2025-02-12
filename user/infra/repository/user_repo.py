@@ -53,7 +53,7 @@ class UserRepository(IUserRepository):
     
     def find_by_id(self, user_id):
         with SessionLocal() as db:
-            user = db.query(User).filter(User.id == user_id).first()
+            user = db.query(User).options(joinedload(User.notifications)).filter(User.id == user_id).first()
         if not user:
             return None
         return UserVO(**row_to_dict(user))
