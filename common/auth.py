@@ -51,7 +51,7 @@ def get_admin_user(token: Annotated[str, Depends(oauth2_scheme)]):
 def create_access_token(
         payload: dict,
         role: Role,
-        expires_delta: timedelta = timedelta(hours=6)
+        expires_delta: timedelta = timedelta(minutes=5)
 ):
     expire = datetime.now(timezone.utc) + expires_delta
     payload.update({"role": role, "exp": expire})
@@ -66,6 +66,6 @@ def decode_access_token(token: str):
     except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
+            detail="Not authenticated",
         )
     
