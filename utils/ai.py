@@ -157,7 +157,7 @@ class AImodule:
         IMPORTANT INSTRUCTIONS:
         - Choose EXACTLY ONE category that best describes the image
         - Use EXACTLY the format shown above for the identified category
-        - Use "null" if information is not available
+        - Use null if information is not available
         - Return ONLY the JSON object, no additional text
         - Keep all responses in Korean language
         - If unsure or if the image doesn't clearly fit into the first four categories, classify as "Others"
