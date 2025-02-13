@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     azure_storage_connection_string: str
     azure_blob_container_name: str
 
+    keyword_api_key: str
+    keyword_endpoint: str
+
 
 @lru_cache
 def get_settings():
