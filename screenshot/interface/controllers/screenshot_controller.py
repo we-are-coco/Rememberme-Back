@@ -8,7 +8,6 @@ from containers import Container
 from screenshot.application.screenshot_service import ScreenshotService
 from datetime import datetime
 import shutil
-from notification.interface.controllers.notification_controller import CreateNotificationBody
 
 
 router = APIRouter(prefix="/screenshot")
@@ -54,7 +53,7 @@ class CreateScreenshotBody(BaseModel):
     price: float | None = Field(default=None)
     code: str | None = Field(default=None)
 
-    notifications: list["CreateNotificationBody"] | None = Field(default=None)
+    notifications: list[datetime] | None = Field(default=None)
 
 
 

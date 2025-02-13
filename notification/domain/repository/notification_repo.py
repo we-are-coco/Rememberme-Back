@@ -32,3 +32,7 @@ class INotificationRepository(ABC):
     @abstractmethod
     def get_pending_notifications(self):
         raise NotImplementedError
+
+    @abstractmethod
+    def save_all(self, notifications: list[Notification]):
+        raise NotImplementedError

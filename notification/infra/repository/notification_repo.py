@@ -107,3 +107,23 @@ class NotificationRepository(INotificationRepository):
                 Notification.is_sent == False,
                 Notification.notification_time <= datetime.now()
             ).all()
+        
+    def save_all(self, notification_vos: list[NotificationVO]):
+        """ 여러 알림 생성 """
+        with SessionLocal() as db:
+            notifications = [
+                Notification(
+                    id=notification_vo.id,
+                    user_id=notification_vo.user_id,
+                    screenshot_id=notification_vo.screenshot_id,
+                    notification_time=notification_vo.notification_time,
+                    is_sent=notification_vo.is_sent,
+                    message=notification_vo.message,
+                    created_at=datetime.now(),
+                    updated_at=datetime.now(),
+                )
+                for notification_vo in notification_vos
+            ]
+            db.add_all(notifications)
+            db.commit()
+            return notifications

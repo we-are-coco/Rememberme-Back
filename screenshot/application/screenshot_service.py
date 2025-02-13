@@ -1,7 +1,9 @@
 from screenshot.domain.repository.screenshot_repo import IScreenshotRepository
 from category.domain.repository.category_repo import ICategoryRepository
+from notification.domain.repository.notification_repo import INotificationRepository
 from screenshot.domain.screenshot import Screenshot
 from category.domain.category import Category
+from notification.domain.notification import Notification
 from ulid import ULID
 from dependency_injector.wiring import inject
 from datetime import datetime
@@ -13,9 +15,15 @@ from utils.logger import logger
 
 class ScreenshotService:
     @inject
-    def __init__(self, screenshot_repo: IScreenshotRepository, ai_module: AImodule, category_repo: ICategoryRepository):
+    def __init__(self,
+                screenshot_repo: IScreenshotRepository, 
+                ai_module: AImodule,
+                category_repo: ICategoryRepository,
+                notification_repo: INotificationRepository,
+            ):
         self.screenshot_repo = screenshot_repo
         self.category_repo = category_repo
+        self.notification_repo = notification_repo
         self.ai_module = ai_module
         self.storage = AzureBlobStorage()
         self.ulid = ULID()
@@ -57,10 +65,25 @@ class ScreenshotService:
             from_location: str,
             to_location: str,
             location: str,
-            details: str
+            details: str,
+            notifications: list[datetime],
     ) -> Screenshot:
+        screenshot_id = self.ulid.generate()
+        notification_vos = []
+        category = self.category_repo.get_category(category_id)
+        for notification in notifications:
+            notification_vos.append(Notification(
+                id=self.ulid.generate(),
+                user_id=user_id,
+                screenshot_id=screenshot_id,
+                notification_time=notification,
+                is_sent=False,
+                message=f"{category.name} 알림 {notification.strftime('%Y-%m-%d %H:%M')}",
+                created_at=datetime.now(),
+                updated_at=datetime.now()
+            ))
         screenshot = Screenshot(
-            id=self.ulid.generate(),
+            id=screenshot_id,
             title=title,
             description=description,
             category_id=category_id,
@@ -79,10 +102,11 @@ class ScreenshotService:
             location=location,
             details=details,
             created_at=datetime.now(),
-            updated_at=datetime.now()
+            updated_at=datetime.now(),
         )
 
         self.screenshot_repo.save(user_id, screenshot)
+        self.notification_repo.save_all(notification_vos)
         return screenshot
     
     def update_screenshot(

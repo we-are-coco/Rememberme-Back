@@ -29,4 +29,10 @@ class Container(containers.DeclarativeContainer):
     
     ai_module = providers.Factory(AImodule)
     screenshot_repo = providers.Factory(ScreenshotRepository)
-    screenshot_service = providers.Factory(ScreenshotService, screenshot_repo=screenshot_repo, category_repo=category_repo, ai_module=ai_module)
+    screenshot_service = providers.Factory(
+        ScreenshotService,
+        notification_repo=notification_repo,
+        screenshot_repo=screenshot_repo,
+        category_repo=category_repo,
+        ai_module=ai_module
+    )
