@@ -16,9 +16,15 @@ class NotificationResponse(BaseModel):
     user_id: str
     screenshot_id: str
     notification_time: datetime
+    message: str
     is_sent: bool
     created_at: datetime
     updated_at: datetime
+
+
+class CreateNotificationBody(BaseModel):
+    notification_time: datetime
+    message: str
 
 
 @router.post("/{screenshot_id}", status_code=201, response_model=NotificationResponse)
@@ -26,14 +32,14 @@ class NotificationResponse(BaseModel):
 def create_notification(
         current_user: Annotated[CurrentUser, Depends(get_current_user)],
         screenshot_id: str,
-        notification_time: datetime,
+        body: CreateNotificationBody,
         notification_service: NotificationService = Depends(Provide[Container.notification_service])
 ) -> NotificationResponse:
     """ 특정 스크린샷에 대한 알림을 생성 """
     notification = notification_service.create_notification(
         user_id=current_user.id,
         screenshot_id=screenshot_id,
-        notification_time=notification_time
+        **body.model_dump(),
     )
     response = asdict(notification)
     return response

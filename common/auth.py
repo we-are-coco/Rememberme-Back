@@ -51,7 +51,7 @@ def get_admin_user(token: Annotated[str, Depends(oauth2_scheme)]):
 def create_access_token(
         payload: dict,
         role: Role,
-        expires_delta: timedelta = timedelta(minutes=5)
+        expires_delta: timedelta = timedelta(hours=6)
 ):
     expire = datetime.now(timezone.utc) + expires_delta
     payload.update({"role": role, "exp": expire})

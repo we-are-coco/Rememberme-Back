@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, DateTime, ForeignKey, Boolean, func
+from sqlalchemy import Column, String, DateTime, ForeignKey, Boolean, func, Text
 from sqlalchemy.orm import relationship
 from database import Base
 
@@ -10,6 +10,7 @@ class Notification(Base):
     screenshot_id = Column(String(36), ForeignKey("screenshot.id"), nullable=False, index=True)
     notification_time = Column(DateTime, nullable=False)  # 알림을 보낼 시간
     is_sent = Column(Boolean, default=False)  # 알림 전송 여부
+    message = Column(Text, nullable=True)  # 알림 메시지
     created_at = Column(DateTime, nullable=False, default=func.now())
     updated_at = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
 

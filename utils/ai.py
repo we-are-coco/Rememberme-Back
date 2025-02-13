@@ -99,7 +99,7 @@ class AImodule:
                  "category": "쿠폰",
                  "brand": "가게 혹은 브랜드 이름",
                  "type": "물건, 음식 등 상품의 종류",
-                 "item": "물건 혹은 서비스 이름",
+                 "title": "물건 혹은 서비스 이름",
                  "date": "YYYY-MM-DD",
                  "time": "HH:MM",
                  "code": "바코드 혹은 시리얼 번호",

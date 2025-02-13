@@ -11,13 +11,14 @@ class NotificationService:
         self.repo = notification_repo
         self.ulid = ULID()
 
-    def create_notification(self, user_id: str, screenshot_id: str, notification_time: datetime):
+    def create_notification(self, user_id: str, screenshot_id: str, notification_time: datetime, message: str):
         """ 특정 스크린샷에 대한 알림 생성 """
         notification = Notification(
             id=self.ulid.generate(),
             user_id=user_id,
             screenshot_id=screenshot_id,
             notification_time=notification_time,
+            message=message,
             is_sent=False,
             created_at=datetime.now(),
             updated_at=datetime.now()

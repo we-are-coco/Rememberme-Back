@@ -49,3 +49,8 @@ class CategoryRepository(ICategoryRepository):
             categories = query.offset((page-1) * items_per_page).limit(items_per_page).all()
             return total_count, categories
         return None
+    
+    def find_by_name(self, name):
+        with SessionLocal() as db:
+            return db.query(CategoryModel).filter(CategoryModel.name == name).first()
+        return None

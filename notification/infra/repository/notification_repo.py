@@ -19,6 +19,7 @@ class NotificationRepository(INotificationRepository):
                 screenshot_id=notification_vo.screenshot_id,
                 notification_time=notification_vo.notification_time,
                 is_sent=notification_vo.is_sent,
+                message=notification_vo.message,
             )
             db.add(notification)
             db.commit()
@@ -62,6 +63,7 @@ class NotificationRepository(INotificationRepository):
 
             if notification:
                 notification.notification_time = notification_vo.notification_time
+                notification.message = notification_vo.message
                 notification.is_sent = notification_vo.is_sent
                 notification.updated_at = datetime.now()
                 db.commit()
@@ -91,7 +93,7 @@ class NotificationRepository(INotificationRepository):
 
             if notification:
                 notification.is_sent = True
-                notification.updated_at = datetime.utcnow()
+                notification.updated_at = datetime.now()
                 db.commit()
                 db.refresh(notification)
                 return row_to_dict(notification)
@@ -103,5 +105,5 @@ class NotificationRepository(INotificationRepository):
         with SessionLocal() as db:
             return db.query(Notification).filter(
                 Notification.is_sent == False,
-                Notification.notification_time <= datetime.utcnow()
+                Notification.notification_time <= datetime.now()
             ).all()

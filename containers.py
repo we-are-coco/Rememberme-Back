@@ -21,13 +21,12 @@ class Container(containers.DeclarativeContainer):
     user_repo = providers.Factory(UserRepository)
     user_service = providers.Factory(UserService, user_repo=user_repo)
 
-    ai_module = providers.Factory(AImodule)
-    screenshot_repo = providers.Factory(ScreenshotRepository)
-    screenshot_service = providers.Factory(ScreenshotService, screenshot_repo=screenshot_repo, ai_module=ai_module)
-
     notification_repo = providers.Factory(NotificationRepository)
     notification_service = providers.Factory(NotificationService, notification_repo=notification_repo)
 
     category_repo = providers.Factory(CategoryRepository)
     category_service = providers.Factory(CategoryService, category_repo=category_repo)
     
+    ai_module = providers.Factory(AImodule)
+    screenshot_repo = providers.Factory(ScreenshotRepository)
+    screenshot_service = providers.Factory(ScreenshotService, screenshot_repo=screenshot_repo, category_repo=category_repo, ai_module=ai_module)

@@ -21,3 +21,7 @@ class ICategoryRepository(metaclass=ABCMeta):
     @abstractmethod
     def get_categories(self, page, items_per_page):
         raise NotImplementedError
+    
+    @abstractmethod
+    def find_by_name(self, category_name):
+        raise NotImplementedError

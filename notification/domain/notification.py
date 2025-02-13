@@ -7,6 +7,7 @@ class Notification:
     user_id: str
     screenshot_id: str
     notification_time: datetime
+    message: str
     is_sent: bool
     created_at: datetime
     updated_at: datetime

@@ -1,4 +1,5 @@
 from screenshot.domain.repository.screenshot_repo import IScreenshotRepository
+from category.domain.repository.category_repo import ICategoryRepository
 from screenshot.domain.screenshot import Screenshot
 from category.domain.category import Category
 from ulid import ULID
@@ -12,8 +13,9 @@ from utils.logger import logger
 
 class ScreenshotService:
     @inject
-    def __init__(self, screenshot_repo: IScreenshotRepository, ai_module: AImodule):
+    def __init__(self, screenshot_repo: IScreenshotRepository, ai_module: AImodule, category_repo: ICategoryRepository):
         self.screenshot_repo = screenshot_repo
+        self.category_repo = category_repo
         self.ai_module = ai_module
         self.storage = AzureBlobStorage()
         self.ulid = ULID()
@@ -160,11 +162,13 @@ class ScreenshotService:
         except Exception as e:
             logger.error(f"Failed to remove file: {file_path}")
 
+        category = self.category_repo.find_by_name(analyze_result.get("category", None))
+
         screenshot = Screenshot(
             id=None,
             title=analyze_result.get("type", None),
             description=analyze_result.get("description", None),
-            category_id=analyze_result.get("category", None),
+            category_id=category.id if category else None,
             url=url,
             start_date=analyze_result.get("start_date", None),
             end_date=analyze_result.get("end_date", None),
