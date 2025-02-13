@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 from typing import BinaryIO
 from config import get_settings
+from azure.core.credentials import AzureKeyCredential
+from azure.ai.textanalytics import TextAnalyticsClient
 
 
 settings = get_settings()
@@ -97,10 +99,10 @@ class AImodule:
                  "category": "쿠폰",
                  "brand": "가게 혹은 브랜드 이름",
                  "type": "물건, 음식 등 상품의 종류",
-                 "title": "물건 혹은 서비스 이름",
-                 "end_date": "YYYY-MM-DD HH:MM",
+                 "item": "물건 혹은 서비스 이름",
+                 "date": "YYYY-MM-DD",
+                 "time": "HH:MM",
                  "code": "바코드 혹은 시리얼 번호",
-                 "price": "가격(float)",
                  "description": "내용을 간략하게 번역하여 작성"
              }
 
@@ -110,7 +112,8 @@ class AImodule:
                  "type": "기차/버스/비행기",
                  "from_location": "출발 장소",
                  "to_location": "도착 장소",
-                 "start_date": "YYYY-MM-DD HH:MM",
+                 "date": "YYYY-MM-DD",
+                 "time": "HH:MM",
                  "description": "내용을 간략하게 번역하여 작성"
              }
 
@@ -119,8 +122,8 @@ class AImodule:
                  "category": "엔터테인먼트",
                  "type": "영화/콘서트/전시",
                  "title": "이벤트 이름",
-                 "start_date": "YYYY-MM-DD HH:MM",
-                 "end_date": "YYYY-MM-DD HH:MM",
+                 "date": "YYYY-MM-DD",
+                 "time": "HH:MM",
                  "location": "장소 이름",
                  "description": "내용을 간략하게 번역하여 작성"
              }
@@ -129,8 +132,7 @@ class AImodule:
              {
                  "category": "약속",
                  "type": "미팅/의료/식당/등등",
-                 "start_date": "YYYY-MM-DD HH:MM",
-                 "end_date": "YYYY-MM-DD HH:MM",
+                 "date": "YYYY-MM-DD",
                  "time": "HH:MM",
                  "location": "장소 이름",
                  "details": "추가 정보",
@@ -141,8 +143,8 @@ class AImodule:
             {
                 "category": "불명",
                 "type": "정보 유형",
-                "start_date": "YYYY-MM-DD HH:MM",
-                "end_date": "YYYY-MM-DD HH:MM",
+                "date": "YYYY-MM-DD",
+                "time": "HH:MM",
                 "description": "내용 간략 설명을 재미있게 그리고 디테일하게 번역하여 작성"
             }        
 
@@ -165,3 +167,22 @@ class AImodule:
         answer_json = self.extract_json_from_string(answer)
 
         return answer_json
+
+
+class KeyPhraseExtraction:
+    def __init__(self):
+        self.endpoint = settings.keyword_endpoint
+        self.key = settings.keyword_api_key
+        self.client = TextAnalyticsClient(
+            endpoint=self.endpoint, 
+            credential=AzureKeyCredential(self.key)
+        )
+    def extract_keywords(self, text):
+        if not text:
+            print("입력된 텍스트가 없습니다.")
+            return []
+        
+        response = self.client.extract_key_phrases([text], language="ko")
+        for document in response:
+            print(f"추출된 키워드: {document.key_phrases}")
+            return document.key_phrases
