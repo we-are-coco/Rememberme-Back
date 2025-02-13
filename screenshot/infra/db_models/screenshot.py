@@ -1,6 +1,6 @@
 from database import Base
 from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, Text, String, DateTime, ForeignKey, Table
+from sqlalchemy import Column, Integer, Text, String, DateTime, ForeignKey, Table, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
@@ -21,6 +21,7 @@ class Screenshot(Base):
     url = Column(String(2084), nullable=False)
     date = Column(String(255), nullable=True)
     time = Column(String(255), nullable=True)
+    is_used = Column(Boolean, nullable=False, default=False)
     from_location = Column(String(255), nullable=True)
     to_location = Column(String(255), nullable=True)
     location = Column(String(255), nullable=True)

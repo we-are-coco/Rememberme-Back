@@ -24,6 +24,7 @@ class Screenshot:
     end_date: datetime | None
     price: float | None
     code: str | None
+    is_used: bool
     created_at: datetime
     updated_at: datetime
 

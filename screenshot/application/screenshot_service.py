@@ -66,6 +66,7 @@ class ScreenshotService:
             to_location: str,
             location: str,
             details: str,
+            is_used: bool,
             notifications: list[datetime],
     ) -> Screenshot:
         screenshot_id = self.ulid.generate()
@@ -86,7 +87,7 @@ class ScreenshotService:
             id=screenshot_id,
             title=title,
             description=description,
-            category_id=category_id,
+            category_id=category.id if category else None,
             url=url,
             start_date=start_date,
             end_date=end_date,
@@ -101,6 +102,7 @@ class ScreenshotService:
             to_location=to_location,
             location=location,
             details=details,
+            is_used=is_used,
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )
@@ -128,25 +130,33 @@ class ScreenshotService:
             location: str | None = None,
             details: str | None = None,
             start_date: datetime | None = None,
-            end_date: datetime | None = None
+            end_date: datetime | None = None,
+            is_used: bool | None = None,
     ) -> Screenshot:
         screenshot = self.screenshot_repo.find_by_id(user_id, screenshot_id)
-        screenshot.title = title or screenshot.title
-        screenshot.description = description or screenshot.description
-        screenshot.category_id = category_id or screenshot.category_id
-        screenshot.url = url or screenshot.url
-        screenshot.price = price or screenshot.price
-        screenshot.code = code or screenshot.code
-        screenshot.brand = brand or screenshot.brand
-        screenshot.type = type or screenshot.type
-        screenshot.date = date or screenshot.date
-        screenshot.time = time or screenshot.time
-        screenshot.from_location = from_location or screenshot.from_location
-        screenshot.to_location = to_location or screenshot.to_location
-        screenshot.location = location or screenshot.location
-        screenshot.details = details or screenshot.details
-        screenshot.start_date = start_date or screenshot.start_date
-        screenshot.end_date = end_date or screenshot.end_date
+        fields_to_update = {
+            "title": title,
+            "description": description,
+            "category_id": category_id,
+            "url": url,
+            "price": price,
+            "code": code,
+            "brand": brand,
+            "type": type,
+            "date": date,
+            "time": time,
+            "from_location": from_location,
+            "to_location": to_location,
+            "location": location,
+            "details": details,
+            "start_date": start_date,
+            "end_date": end_date,
+            "is_used": is_used,
+        }
+
+        for field, value in fields_to_update.items():
+            if value is not None:
+                setattr(screenshot, field, value)
 
         self.screenshot_repo.update(user_id, screenshot)
         return screenshot
@@ -207,6 +217,7 @@ class ScreenshotService:
             location=analyze_result.get("location", None),
             details=analyze_result.get("details", None),
             user_id=user_id,
+            is_used=False,
             created_at=None,
             updated_at=None,
         )

@@ -13,14 +13,14 @@ import shutil
 router = APIRouter(prefix="/screenshot")
 
 class ScreenshotResponse(BaseModel):
-    id: str
-    user_id: str
-    title: str
-    category_id: str
-    description: str
+    id: str | None
+    user_id: str | None
+    title: str | None
+    category_id: str | None
+    description: str | None
     brand: str | None
     type: str | None
-    url: str
+    url: str | None
     date: str | None
     time: str | None
     from_location: str | None
@@ -31,8 +31,9 @@ class ScreenshotResponse(BaseModel):
     end_date: datetime | None
     price: float | None
     code: str | None
-    created_at: datetime
-    updated_at: datetime
+    is_used: bool | None
+    created_at: datetime | None
+    updated_at: datetime | None
 
 
 class CreateScreenshotBody(BaseModel):
@@ -73,6 +74,7 @@ class UpdateScreenshotBody(BaseModel):
     end_date: datetime | None = Field(default=None)
     price: float | None = Field(default=None)
     code: str | None = Field(default=None)
+    is_used: bool | None = Field(default=None)
 
 
 @router.post("/upload")

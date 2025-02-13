@@ -76,6 +76,7 @@ class ScreenshotRepository(IScreenshotRepository):
                 to_location=screenshot_vo.to_location,
                 location=screenshot_vo.location,
                 details=screenshot_vo.details,
+                is_used=screenshot_vo.is_used,
                 created_at=screenshot_vo.created_at,
                 updated_at=screenshot_vo.updated_at,
             )
@@ -93,23 +94,8 @@ class ScreenshotRepository(IScreenshotRepository):
             if not screenshot:
                 raise HTTPException(status_code=422, detail="Screenshot not found")
             
-            screenshot.title = screenshot_vo.title
-            screenshot.description = screenshot_vo.description
-            screenshot.category_id = screenshot_vo.category_id
-            screenshot.url = screenshot_vo.url
-            screenshot.start_date = screenshot_vo.start_date
-            screenshot.end_date = screenshot_vo.end_date
-            screenshot.price = screenshot_vo.price
-            screenshot.code = screenshot_vo.code
-            screenshot.brand = screenshot_vo.brand
-            screenshot.type = screenshot_vo.type
-            screenshot.date = screenshot_vo.date
-            screenshot.time = screenshot_vo.time
-            screenshot.from_location = screenshot_vo.from_location
-            screenshot.to_location = screenshot_vo.to_location
-            screenshot.location = screenshot_vo.location
-            screenshot.details = screenshot_vo.details
-            screenshot.updated_at = screenshot_vo.updated_at
+            for key, value in asdict(screenshot_vo).items():
+                setattr(screenshot, key, value)
 
             db.add(screenshot)
             db.commit()
