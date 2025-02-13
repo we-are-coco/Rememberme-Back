@@ -190,7 +190,7 @@ class ScreenshotService:
 
         screenshot = Screenshot(
             id=None,
-            title=analyze_result.get("type", None),
+            title=analyze_result.get("title", None),
             description=analyze_result.get("description", None),
             category_id=category.id if category else None,
             url=url,

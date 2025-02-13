@@ -81,7 +81,7 @@ def upload_screenshot(
         current_user: Annotated[CurrentUser, Depends(get_current_user)],
         screenshot_service: ScreenshotService = Depends(Provide[Container.screenshot_service]),
         file: UploadFile | None = None
-):
+) -> ScreenshotResponse:
     file_path = f"temp/{file.filename}"
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
