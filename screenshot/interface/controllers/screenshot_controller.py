@@ -37,10 +37,10 @@ class ScreenshotResponse(BaseModel):
 
 
 class CreateScreenshotBody(BaseModel):
-    title: str = Field(min_length=1, max_length=64)
+    title: str | None = Field(min_length=1, max_length=64)
     category_id: str = Field(min_length=1)
     description: str = Field(min_length=1)
-    url: str = Field(min_length=1)
+    url: str | None = Field(min_length=1)
     brand: str | None = Field(default=None)
     type: str | None = Field(default=None)
     date: str | None = Field(default=None)

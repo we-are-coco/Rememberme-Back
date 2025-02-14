@@ -7,10 +7,10 @@ from category.domain.category import Category
 @dataclass
 class Screenshot:
     id: str
-    user_id: str
-    title: str
-    category_id: str
-    description: str
+    user_id: str | None
+    title: str | None
+    category_id: str | None
+    description: str | None
     brand: str | None
     type: str | None
     url: str

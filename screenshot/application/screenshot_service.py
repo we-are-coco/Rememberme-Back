@@ -78,7 +78,7 @@ class ScreenshotService:
                 screenshot_id=screenshot_id,
                 notification_time=notification,
                 is_sent=False,
-                message=f"{category.name} 알림 {notification.strftime('%Y-%m-%d %H:%M')}",
+                message=f"{category.name if category else "??"} 알림 {notification.strftime('%Y-%m-%d %H:%M')}",
                 created_at=datetime.now(),
                 updated_at=datetime.now()
             ))
