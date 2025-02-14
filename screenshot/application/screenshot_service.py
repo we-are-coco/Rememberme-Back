@@ -66,7 +66,6 @@ class ScreenshotService:
             to_location: str,
             location: str,
             details: str,
-            is_used: bool,
             notifications: list[datetime],
     ) -> Screenshot:
         screenshot_id = self.ulid.generate()
@@ -102,7 +101,7 @@ class ScreenshotService:
             to_location=to_location,
             location=location,
             details=details,
-            is_used=is_used,
+            is_used=False,
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )
