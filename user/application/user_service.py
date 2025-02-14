@@ -16,7 +16,7 @@ class UserService:
         self.ulid = ULID()
         self.crypto = Crypto()
 
-    def create_user(self, name: str, email: str, password: str, memo: str|None=None) -> User:
+    def create_user(self, name: str, email: str, password: str, memo: str | None = None, fcm_token: str | None = None) -> User:
         _user = self.user_repo.find_by_email(email)
         if _user:
             raise HTTPException(status_code=422, detail="User already exists")
@@ -27,6 +27,7 @@ class UserService:
             email=email,
             password=self.crypto.encrypt(password) if password else None,
             memo=memo,
+            fcm_token=fcm_token,
             notifications=[],
             created_at=now,
             updated_at=now
@@ -34,7 +35,7 @@ class UserService:
         self.user_repo.save(user)
         return user
     
-    def update_user(self, user_id: str, name:str | None = None, password: str | None = None):
+    def update_user(self, user_id: str, name:str | None = None, password: str | None = None, fcm_token: str | None = None) -> User:
         user = self.user_repo.find_by_id(user_id)
         if not user:
             raise HTTPException(status_code=422, detail="User not found")
@@ -43,6 +44,8 @@ class UserService:
             user.name = name
         if password:
             user.password = self.crypto.encrypt(password)
+        if fcm_token:
+            user.fcm_token = fcm_token
         user.updated_at = datetime.now()
 
         self.user_repo.update(user)

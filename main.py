@@ -7,13 +7,25 @@ from screenshot.interface.controllers.screenshot_controller import router as scr
 from notification.interface.controllers.notification_controller import router as notification_router
 from category.interface.controllers.category_controller import router as category_router
 
+from contextlib import asynccontextmanager
+
+from notification_worker import check_and_send_notifications
+
+
 def create_temp_directory():
     if not os.path.exists("temp"):
         os.makedirs("temp")
 
 create_temp_directory()
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await check_and_send_notifications()
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
 app.container = Container()
 app.include_router(user_router)
 app.include_router(screenshot_router)

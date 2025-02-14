@@ -69,3 +69,5 @@ uvloop==0.21.0
 watchfiles==1.0.4
 websockets==14.2
 azure-ai-textanalytics==5.3.0
+fastapi-utilities==0.3.0
+firebase_admin==6.6.0

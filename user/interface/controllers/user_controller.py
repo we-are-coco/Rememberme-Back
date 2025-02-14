@@ -20,6 +20,7 @@ class CreateUserBody(BaseModel):
 class UpdateUserBody(BaseModel):
     name: str | None = Field(min_length=2, max_length=32, default=None)
     password: str | None = Field(min_length=8, max_length=32, default=None)
+    fcm_token: str | None = Field(max_length=4096, default=None)
 
 
 class UserResponse(BaseModel):
@@ -55,7 +56,9 @@ def update_user(
     updated_user = user_service.update_user(
         user_id=current_user.id, 
         name=body.name, 
-        password=body.password)
+        password=body.password,
+        fcm_token=body.fcm_token
+    )
     return updated_user
 
 @router.get("")
