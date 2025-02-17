@@ -11,7 +11,7 @@ from firebase_admin import messaging
 
 def download_fcm():
     storage = AzureBlobStorage()
-    storage.download_image("rememberme_fcm.json", "rememberme_fcm.json")
+    storage.download_image("rememberme_fcm.json", "./rememberme_fcm.json")
 
 
 def send_push_notification(notification: dict):
@@ -44,10 +44,15 @@ def check_and_send_notifications():
         notification_service.mark_notification_as_sent(notification.id)
 
 
-download_fcm()
-cred = credentials.Certificate("rememberme_fcm.json")
-firebase_admin.initialize_app(cred)
+def fcm_startup():
+    try:
+        download_fcm()
+        cred = credentials.Certificate("./rememberme_fcm.json")
+        firebase_admin.initialize_app(cred)
+    except Exception as e:
+        print(f"🔔 Error initializing FCM: {e}")
 
+fcm_startup()
 
 if __name__ == "__main__":
     check_and_send_notifications()
