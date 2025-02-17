@@ -11,6 +11,7 @@ from database import SessionLocal
 from utils.db_utils import row_to_dict
 from fastapi import HTTPException
 from dataclasses import asdict
+from utils.common import get_time_description
 
 
 class ScreenshotRepository(IScreenshotRepository):
@@ -49,9 +50,12 @@ class ScreenshotRepository(IScreenshotRepository):
             
             screenshot_vos = []
             for screenshot in screenshots:
-                notification_vos = [
-                    NotificationVO(**row_to_dict(notification)) for notification in screenshot.notifications
-                ]
+                notification_vos = []
+                for notification in screenshot.notifications:
+                    noti = row_to_dict(notification)
+                    noti['time_description'] = get_time_description(notification.notification_time)
+                    notification_vos.append(NotificationVO(**noti))
+
                 screenshot_vo = ScreenshotVO(**row_to_dict(screenshot))
                 screenshot_vo.notifications = notification_vos
                 screenshot_vos.append(screenshot_vo)
@@ -70,9 +74,12 @@ class ScreenshotRepository(IScreenshotRepository):
             if not screenshot:
                 raise HTTPException(status_code=422, detail="Screenshot not found")
             
-            notification_vos = [
-                NotificationVO(**row_to_dict(notification)) for notification in screenshot.notifications
-            ]
+            notification_vos = []
+            for notification in screenshot.notifications:
+                noti = row_to_dict(notification)
+                noti['time_description'] = get_time_description(notification.notification_time)
+                notification_vos.append(NotificationVO(**noti))
+            
             screenshot_vo = ScreenshotVO(**row_to_dict(screenshot))
             screenshot_vo.notifications = notification_vos
             return screenshot_vo
