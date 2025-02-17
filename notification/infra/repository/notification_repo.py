@@ -93,6 +93,12 @@ class NotificationRepository(INotificationRepository):
                 db.delete(notification)
                 db.commit()
 
+    def delete_all(self, user_id: str):
+        """ 사용자의 모든 알림 삭제 """
+        with SessionLocal() as db:
+            db.query(Notification).filter(Notification.user_id == user_id).delete()
+            db.commit()
+
     def mark_notification_as_sent(self, user_id: str, notification_id: str) -> dict:
         """ 특정 알림을 '보낸 상태'로 변경 """
         with SessionLocal() as db:

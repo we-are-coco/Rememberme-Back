@@ -24,6 +24,10 @@ class INotificationRepository(ABC):
     @abstractmethod
     def delete(self, user_id: str, screenshot_id: str):
         raise NotImplementedError
+    
+    @abstractmethod
+    def delete_all(self, user_id: str):
+        raise NotImplementedError
 
     @abstractmethod
     def mark_notification_as_sent(self, user_id: str, notification_id: str) -> dict:

@@ -137,6 +137,7 @@ class ScreenshotService:
             start_date: datetime | None = None,
             end_date: datetime | None = None,
             is_used: bool | None = None,
+            notifications: list[datetime] | None = None,
     ) -> Screenshot:
         screenshot = self.screenshot_repo.find_by_id(user_id, screenshot_id)
         fields_to_update = {
@@ -163,7 +164,24 @@ class ScreenshotService:
             if value is not None:
                 setattr(screenshot, field, value)
 
+        if notifications is not None:
+            self.notification_repo.delete_all(user_id=user_id)
+            notification_vos = []
+            for notification in notifications:
+                notification_vos.append(Notification(
+                    id=self.ulid.generate(),
+                    user_id=user_id,
+                    screenshot_id=screenshot_id,
+                    notification_time=notification,
+                    is_sent=False,
+                    message=f"{screenshot.category.name} 알림 {notification.strftime('%Y-%m-%d %H:%M')}",
+                    created_at=datetime.now(),
+                    updated_at=datetime.now()
+                ))
+
+
         self.screenshot_repo.update(user_id, screenshot)
+        self.notification_repo.save_all(notification_vos)
         return screenshot
     
     def delete_screenshot(
