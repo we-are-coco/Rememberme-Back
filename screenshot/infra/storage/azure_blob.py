@@ -16,3 +16,10 @@ class AzureBlobStorage:
             blob_client.upload_blob(file, overwrite=True)
 
         return blob_client.url
+    
+    def download_image(self, blob_name: str, file_path: str):
+        blob_client = self.container_client.get_blob_client(blob_name)
+
+        with open(file_path, "wb") as file:
+            data = blob_client.download_blob()
+            data.readinto(file)
