@@ -58,6 +58,9 @@ jobs:
         with:
           name: python-app
 
+      - name: add dependencies
+        run: sudo apt install portaudio19-dev
+
       - name: Unzip artifact for deployment
         run: unzip release.zip
 
