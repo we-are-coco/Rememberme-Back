@@ -1,13 +1,17 @@
 from notification.application.notification_service import NotificationService
 from notification.infra.repository.notification_repo import NotificationRepository
+from screenshot.infra.storage.azure_blob import AzureBlobStorage
 from fastapi_utilities import repeat_every
 
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import messaging
 
-cred = credentials.Certificate("rememberme_fcm.json")
-firebase_admin.initialize_app(cred)
+
+
+def download_fcm():
+    storage = AzureBlobStorage()
+    storage.download_image("rememberme_fcm.json", "rememberme_fcm.json")
 
 
 def send_push_notification(notification: dict):
@@ -38,6 +42,12 @@ def check_and_send_notifications():
 
         # 알림을 보낸 것으로 업데이트
         notification_service.mark_notification_as_sent(notification.id)
+
+
+download_fcm()
+cred = credentials.Certificate("rememberme_fcm.json")
+firebase_admin.initialize_app(cred)
+
 
 if __name__ == "__main__":
     check_and_send_notifications()

@@ -27,9 +27,6 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-        
-      - name: add dependencies
-        run: sudo apt install portaudio19-dev
 
       - name: Install dependencies
         run: pip install -r requirements.txt
