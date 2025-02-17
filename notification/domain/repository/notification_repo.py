@@ -22,11 +22,11 @@ class INotificationRepository(ABC):
         raise NotImplementedError
     
     @abstractmethod
-    def delete(self, user_id: str, screenshot_id: str):
+    def delete(self, user_id: str, notification_id: str):
         raise NotImplementedError
     
     @abstractmethod
-    def delete_all(self, user_id: str):
+    def delete_all(self, user_id: str, screenshot_id: str):
         raise NotImplementedError
 
     @abstractmethod

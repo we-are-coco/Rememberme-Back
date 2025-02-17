@@ -3,7 +3,9 @@ from datetime import datetime, timezone
 
 def get_time_description(notification: datetime):
     """ 알림 시간에 따른 설명 반환 """
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
+    if notification.tzinfo is None:
+        notification = notification.replace(tzinfo=timezone.utc)
     diff = notification - now
 
     if diff.days > 0:
