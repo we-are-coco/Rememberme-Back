@@ -37,4 +37,4 @@ class Screenshot(Base):
     notifications = relationship("Notification", back_populates="screenshot", cascade="all, delete-orphan")
     
     def __repr__(self):
-        return f"<Screenshot(id={self.id}, title={self.title}, description={self.description})>"
+        return f"<Screenshot(id={self.id}, title={self.title}, description={self.description[:10]}, notifications={self.notifications})>"

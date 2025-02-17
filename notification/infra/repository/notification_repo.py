@@ -3,6 +3,7 @@ from sqlalchemy import or_
 from notification.infra.db_models.notification import Notification
 from notification.domain.repository.notification_repo import INotificationRepository
 from notification.domain.notification import Notification as NotificationVO
+from user.infra.db_models.user import User
 from utils.db_utils import row_to_dict
 import uuid
 from datetime import datetime
@@ -39,7 +40,7 @@ class NotificationRepository(INotificationRepository):
                 .all()
             )
 
-            return total_count, [row_to_dict(notification) for notification in notifications]
+            return total_count, [NotificationVO(**row_to_dict(notification)) for notification in notifications]
 
     def find_by_id(self, user_id: str, notification_id: str) -> dict:
         """ 특정 알림 조회 """
@@ -103,10 +104,14 @@ class NotificationRepository(INotificationRepository):
     def get_pending_notifications(self):
         """ 전송되지 않은 알림 조회 (현재 시각을 기준) """
         with SessionLocal() as db:
-            return db.query(Notification).filter(
-                Notification.is_sent == False,
-                Notification.notification_time <= datetime.now()
-            ).all()
+            return (
+                db.query(Notification, User.fcm_token)
+                    .join(User, Notification.user_id == User.id)
+                    .filter(
+                        Notification.is_sent == False,
+                        Notification.notification_time <= datetime.now()
+                ).all()
+            )
         
     def save_all(self, notification_vos: list[NotificationVO]):
         """ 여러 알림 생성 """
