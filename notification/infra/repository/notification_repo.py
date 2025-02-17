@@ -8,6 +8,7 @@ from utils.db_utils import row_to_dict
 import uuid
 from datetime import datetime
 from database import SessionLocal
+from utils.common import get_time_description
 
 
 class NotificationRepository(INotificationRepository):  
@@ -40,7 +41,13 @@ class NotificationRepository(INotificationRepository):
                 .all()
             )
 
-            return total_count, [NotificationVO(**row_to_dict(notification)) for notification in notifications]
+            notification_vos = []
+            for notification in notifications:
+                noti = row_to_dict(notification)
+                noti['time_description'] = get_time_description(notification.notification_time)
+                notification_vos.append(NotificationVO(**noti))
+
+            return total_count, notification_vos
 
     def find_by_id(self, user_id: str, notification_id: str) -> dict:
         """ 특정 알림 조회 """
@@ -51,7 +58,9 @@ class NotificationRepository(INotificationRepository):
             ).first()
 
             if notification:
-                return row_to_dict(notification)
+                notification_vo = row_to_dict(notification)
+                notification_vo['time_description'] = get_time_description(notification.notification_time)
+                return NotificationVO(**notification_vo)
             return None
         
     def update(self, user_id: str, notification_vo: NotificationVO) -> Notification:
