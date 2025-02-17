@@ -3,10 +3,12 @@ from sqlalchemy import or_
 from notification.infra.db_models.notification import Notification
 from notification.domain.repository.notification_repo import INotificationRepository
 from notification.domain.notification import Notification as NotificationVO
+from user.infra.db_models.user import User
 from utils.db_utils import row_to_dict
 import uuid
 from datetime import datetime
 from database import SessionLocal
+from utils.common import get_time_description
 
 
 class NotificationRepository(INotificationRepository):  
@@ -39,7 +41,13 @@ class NotificationRepository(INotificationRepository):
                 .all()
             )
 
-            return total_count, [row_to_dict(notification) for notification in notifications]
+            notification_vos = []
+            for notification in notifications:
+                noti = row_to_dict(notification)
+                noti['time_description'] = get_time_description(notification.notification_time)
+                notification_vos.append(NotificationVO(**noti))
+
+            return total_count, notification_vos
 
     def find_by_id(self, user_id: str, notification_id: str) -> dict:
         """ 특정 알림 조회 """
@@ -50,7 +58,9 @@ class NotificationRepository(INotificationRepository):
             ).first()
 
             if notification:
-                return row_to_dict(notification)
+                notification_vo = row_to_dict(notification)
+                notification_vo['time_description'] = get_time_description(notification.notification_time)
+                return NotificationVO(**notification_vo)
             return None
         
     def update(self, user_id: str, notification_vo: NotificationVO) -> Notification:
@@ -103,10 +113,14 @@ class NotificationRepository(INotificationRepository):
     def get_pending_notifications(self):
         """ 전송되지 않은 알림 조회 (현재 시각을 기준) """
         with SessionLocal() as db:
-            return db.query(Notification).filter(
-                Notification.is_sent == False,
-                Notification.notification_time <= datetime.now()
-            ).all()
+            return (
+                db.query(Notification, User.fcm_token)
+                    .join(User, Notification.user_id == User.id)
+                    .filter(
+                        Notification.is_sent == False,
+                        Notification.notification_time <= datetime.now()
+                ).all()
+            )
         
     def save_all(self, notification_vos: list[NotificationVO]):
         """ 여러 알림 생성 """

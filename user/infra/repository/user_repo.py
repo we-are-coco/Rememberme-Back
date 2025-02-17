@@ -14,6 +14,7 @@ class UserRepository(IUserRepository):
             name=user.name,
             email=user.email,
             password=user.password,
+            fcm_token=user.fcm_token,
             created_at=user.created_at,
             updated_at=user.updated_at
         )
@@ -47,6 +48,7 @@ class UserRepository(IUserRepository):
             
             user.name = user_vo.name
             user.password = user_vo.password
+            user.fcm_token = user_vo.fcm_token
 
             db.add(user)
             db.commit()

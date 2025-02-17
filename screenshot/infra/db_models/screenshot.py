@@ -13,9 +13,9 @@ class Screenshot(Base):
     
     id = Column(String(36), primary_key=True)
     user_id = Column(String(36), ForeignKey("user.id"), nullable=False, index=True)
-    title = Column(String(255), nullable=False)
-    category_id = Column(String(36), ForeignKey(Category.id), nullable=False, index=True)
-    description = Column(Text, nullable=False)
+    title = Column(String(255), nullable=True)
+    category_id = Column(String(36), ForeignKey(Category.id), nullable=True, index=True)
+    description = Column(Text, nullable=True)
     brand = Column(String(255), nullable=True)
     type = Column(String(255), nullable=True)
     url = Column(String(2084), nullable=False)
@@ -37,4 +37,4 @@ class Screenshot(Base):
     notifications = relationship("Notification", back_populates="screenshot", cascade="all, delete-orphan")
     
     def __repr__(self):
-        return f"<Screenshot(id={self.id}, title={self.title}, description={self.description})>"
+        return f"<Screenshot(id={self.id}, title={self.title}, description={self.description[:10]}, notifications={self.notifications})>"

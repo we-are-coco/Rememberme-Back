@@ -5,7 +5,7 @@ from category.domain.category import Category
 
 class IScreenshotRepository(ABC):
     @abstractmethod
-    def get_screenshots(self, screenshot_id: str, page: int, items_per_page: int, keywords: list[str]) -> tuple[int, list[Screenshot]]:
+    def get_screenshots(self, screenshot_id: str, keywords: list[str], unused_only: bool) -> tuple[int, list[Screenshot]]:
         raise NotImplementedError
 
     @abstractmethod

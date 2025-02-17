@@ -6,6 +6,7 @@ from typing import Annotated
 from common.auth import CurrentUser, get_current_user
 from containers import Container
 from screenshot.application.screenshot_service import ScreenshotService
+from notification.interface.controllers.notification_controller import NotificationResponse
 from datetime import datetime
 import shutil
 
@@ -35,12 +36,14 @@ class ScreenshotResponse(BaseModel):
     created_at: datetime | None
     updated_at: datetime | None
 
+    notifications: list["NotificationResponse"] | None = None
+
 
 class CreateScreenshotBody(BaseModel):
-    title: str = Field(min_length=1, max_length=64)
+    title: str | None = Field(min_length=1, max_length=64)
     category_id: str = Field(min_length=1)
     description: str = Field(min_length=1)
-    url: str = Field(min_length=1)
+    url: str | None = Field(min_length=1)
     brand: str | None = Field(default=None)
     type: str | None = Field(default=None)
     date: str | None = Field(default=None)
@@ -56,6 +59,10 @@ class CreateScreenshotBody(BaseModel):
 
     notifications: list[datetime] | None = Field(default=None)
 
+
+class GetScreenshotsResponse(BaseModel):
+    total_count: int
+    screenshots: list[ScreenshotResponse]
 
 
 class UpdateScreenshotBody(BaseModel):
@@ -75,6 +82,8 @@ class UpdateScreenshotBody(BaseModel):
     price: float | None = Field(default=None)
     code: str | None = Field(default=None)
     is_used: bool | None = Field(default=None)
+
+    notifications: list[datetime] | None = Field(default=None)
 
 
 @router.post("/upload")
@@ -107,31 +116,22 @@ def create_screenshot(
     return response
 
 
-class GetScreenshotsResponse(BaseModel):
-    total_count: int
-    page: int
-    screenshots: list[ScreenshotResponse]
-
-
 @router.get("", response_model=GetScreenshotsResponse)
 @inject
 def get_screenshots(
         current_user: Annotated[CurrentUser, Depends(get_current_user)],
-        page: int = 1,
-        items_per_page: int = 10,
         search_text: str = "",
+        only_unused: bool = True,
         screenshot_service: ScreenshotService = Depends(Provide[Container.screenshot_service])
 ) -> GetScreenshotsResponse:
     total_count, screenshots = screenshot_service.get_screenshots(
         current_user.id,
-        page,
-        items_per_page,
         search_text,
+        only_unused,
     )
-    screenshot_responses = [asdict(screenshot) for screenshot in screenshots]
+    screenshot_responses = [ asdict(screenshot) for screenshot in screenshots ]
     response = GetScreenshotsResponse(
         total_count=total_count,
-        page=page,
         screenshots=screenshot_responses
     )
     return response

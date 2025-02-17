@@ -31,14 +31,18 @@ class ScreenshotService:
     def get_screenshots(
             self,
             user_id: str,
-            page: int,
-            items_per_page: int,
             search_text: str,
+            unused_only: bool,
     ) -> tuple[int, list[Screenshot]]:
-        # todo: extract keyword
-        # keywords = self.ai_module.extract_keywords(search_text)
-        #keywords = ["신세계", "상품권", "30000원"]
-        return self.screenshot_repo.get_screenshots(user_id, page, items_per_page, search_text)
+        keywords = search_text.split(" ")
+        return self.screenshot_repo.get_screenshots(user_id, keywords, unused_only)
+    
+    def get_screenshots_with_voice(
+            self,
+            user_id: str,
+            voice_file_path: str,
+    ):
+        pass
     
     def get_screenshot(
             self,
@@ -66,7 +70,6 @@ class ScreenshotService:
             to_location: str,
             location: str,
             details: str,
-            is_used: bool,
             notifications: list[datetime],
     ) -> Screenshot:
         screenshot_id = self.ulid.generate()
@@ -79,7 +82,7 @@ class ScreenshotService:
                 screenshot_id=screenshot_id,
                 notification_time=notification,
                 is_sent=False,
-                message=f"{category.name} 알림 {notification.strftime('%Y-%m-%d %H:%M')}",
+                message=f"{category.name if category else "??"} 알림 {notification.strftime('%Y-%m-%d %H:%M')}",
                 created_at=datetime.now(),
                 updated_at=datetime.now()
             ))
@@ -102,9 +105,11 @@ class ScreenshotService:
             to_location=to_location,
             location=location,
             details=details,
-            is_used=is_used,
+            is_used=False,
             created_at=datetime.now(),
             updated_at=datetime.now(),
+
+            notifications=notification_vos
         )
 
         self.screenshot_repo.save(user_id, screenshot)
@@ -220,6 +225,7 @@ class ScreenshotService:
             is_used=False,
             created_at=None,
             updated_at=None,
+            notifications=[],
         )
         return screenshot
         

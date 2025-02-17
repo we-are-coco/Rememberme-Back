@@ -31,7 +31,7 @@ def create_category(
         category: CreateCategoryBody,
         category_service: CategoryService = Depends(Provide[Container.category_service])
     ):
-    return category_service.create_category(category)
+    return category_service.create_category(name=category.name)
 
 @router.get('/{category_id}')
 @inject

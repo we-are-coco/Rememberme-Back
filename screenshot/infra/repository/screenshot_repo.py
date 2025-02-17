@@ -1,46 +1,64 @@
 from screenshot.infra.db_models.screenshot import Screenshot
 from category.infra.db_models.category import Category
+from notification.infra.db_models.notification import Notification
 from screenshot.domain.repository.screenshot_repo import IScreenshotRepository
 from sqlalchemy.orm import joinedload
 from sqlalchemy import or_
 from screenshot.domain.screenshot import Screenshot as ScreenshotVO
 from category.domain.category import Category as CategoryVO
+from notification.domain.notification import Notification as NotificationVO
 from database import SessionLocal
 from utils.db_utils import row_to_dict
 from fastapi import HTTPException
 from dataclasses import asdict
+from utils.common import get_time_description
 
 
 class ScreenshotRepository(IScreenshotRepository):
 
     def get_screenshots(
             self,
-            user_id, 
-            page, 
-            items_per_page,
+            user_id,
             keywords: list[str],
+            unused_only: bool,
         ) -> tuple[int, list[ScreenshotVO]]:
         with SessionLocal() as db:
             query = (
                 db.query(Screenshot)
                 .filter(Screenshot.user_id == user_id)
                 .join(Category, Screenshot.category_id == Category.id)
+                .join(Notification, Screenshot.id == Notification.screenshot_id)
                 .options(joinedload(Screenshot.category))
             )
             if keywords:
                 keyword_conditions = or_(
                     *[or_(
+                        Screenshot.brand.ilike(f"%{keyword}%"),
+                        Screenshot.type.ilike(f"%{keyword}%"),
+                        Screenshot.details.ilike(f"%{keyword}%"),
                         Screenshot.title.ilike(f"%{keyword}%"), 
                         Screenshot.description.ilike(f"%{keyword}%"), 
                         Category.name.ilike(f"%{keyword}%")
                     ) for keyword in keywords]
                 )
                 query = query.filter(keyword_conditions)
+            if unused_only:
+                query = query.filter(Screenshot.is_used == False)
 
             total_count = query.count()
-            screenshots = query.offset((page - 1) * items_per_page).limit(items_per_page).all()
+            screenshots = query.all()
+            
+            screenshot_vos = []
+            for screenshot in screenshots:
+                notification_vos = []
+                for notification in screenshot.notifications:
+                    noti = row_to_dict(notification)
+                    noti['time_description'] = get_time_description(notification.notification_time)
+                    notification_vos.append(NotificationVO(**noti))
 
-            screenshot_vos = [ScreenshotVO(**row_to_dict(screenshot)) for screenshot in screenshots]
+                screenshot_vo = ScreenshotVO(**row_to_dict(screenshot))
+                screenshot_vo.notifications = notification_vos
+                screenshot_vos.append(screenshot_vo)
             return total_count, screenshot_vos
 
     
@@ -49,11 +67,22 @@ class ScreenshotRepository(IScreenshotRepository):
             screenshot = (
                 db.query(Screenshot)
                 .filter(Screenshot.user_id == user_id, Screenshot.id == screenshot_id)
+                .join(Category, Screenshot.category_id == Category.id)
+                .join(Notification, Screenshot.id == Notification.screenshot_id)
                 .first()
             )
             if not screenshot:
                 raise HTTPException(status_code=422, detail="Screenshot not found")
-            return ScreenshotVO(**row_to_dict(screenshot))
+            
+            notification_vos = []
+            for notification in screenshot.notifications:
+                noti = row_to_dict(notification)
+                noti['time_description'] = get_time_description(notification.notification_time)
+                notification_vos.append(NotificationVO(**noti))
+            
+            screenshot_vo = ScreenshotVO(**row_to_dict(screenshot))
+            screenshot_vo.notifications = notification_vos
+            return screenshot_vo
     
     def save(self, user_id: str, screenshot_vo: ScreenshotVO):
         with SessionLocal() as db:
