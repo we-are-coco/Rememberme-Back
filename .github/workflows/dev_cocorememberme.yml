@@ -54,15 +54,15 @@ jobs:
 
       - name: add dependencies
         run: sudo apt install build-essential portaudio19-dev
+
+      - name: Unzip artifact for deployment
+        run: unzip release.zip
       
       - name: add dependencies
         run: sudo apt install portaudio19-dev
 
       - name: Install dependencies
         run: pip install -r requirements.txt
-
-      - name: Unzip artifact for deployment
-        run: unzip release.zip
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
