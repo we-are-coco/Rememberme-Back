@@ -40,7 +40,7 @@ class NotificationRepository(INotificationRepository):
                 .all()
             )
 
-            return total_count, [row_to_dict(notification) for notification in notifications]
+            return total_count, [NotificationVO(**row_to_dict(notification)) for notification in notifications]
 
     def find_by_id(self, user_id: str, notification_id: str) -> dict:
         """ 특정 알림 조회 """

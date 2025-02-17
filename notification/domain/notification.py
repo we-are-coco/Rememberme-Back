@@ -11,3 +11,6 @@ class Notification:
     is_sent: bool
     created_at: datetime
     updated_at: datetime
+
+    user: "User" = None
+    screenshot: "Screenshot" = None

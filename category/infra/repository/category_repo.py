@@ -5,13 +5,14 @@ from database import SessionLocal
 from datetime import datetime
 from utils.db_utils import row_to_dict
 from sqlalchemy.orm import noload
+from dataclasses import asdict
 
 
 class CategoryRepository(ICategoryRepository):
 
     def create_category(self, category):
         with SessionLocal() as db:
-            db_category = CategoryModel(**category.__dict__)
+            db_category = CategoryModel(**asdict(category))
             db.add(db_category)
             db.commit()
             db.refresh(db_category)
