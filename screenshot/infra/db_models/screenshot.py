@@ -34,7 +34,7 @@ class Screenshot(Base):
     updated_at = Column(DateTime, nullable=False, default=func.now(), onupdate=func.now())
 
     category = relationship("Category", back_populates="screenshot")
-    notifications = relationship("Notification", back_populates="screenshot")
+    notifications = relationship("Notification", back_populates="screenshot", cascade="all, delete-orphan")
     
     def __repr__(self):
         return f"<Screenshot(id={self.id}, title={self.title}, description={self.description[:10]}, notifications={self.notifications})>"

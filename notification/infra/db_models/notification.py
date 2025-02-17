@@ -7,7 +7,7 @@ class Notification(Base):
 
     id = Column(String(36), primary_key=True)
     user_id = Column(String(36), ForeignKey("user.id"), nullable=False, index=True)
-    screenshot_id = Column(String(36), ForeignKey("screenshot.id"), nullable=False, index=True)
+    screenshot_id = Column(String(36), ForeignKey("screenshot.id", ondelete="CASCADE"), nullable=False, index=True)
     notification_time = Column(DateTime, nullable=False)  # 알림을 보낼 시간
     is_sent = Column(Boolean, default=False)  # 알림 전송 여부
     message = Column(Text, nullable=True)  # 알림 메시지
