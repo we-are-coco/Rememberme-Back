@@ -27,7 +27,7 @@ class ScreenshotRepository(IScreenshotRepository):
                 db.query(Screenshot)
                 .filter(Screenshot.user_id == user_id)
                 .join(Category, Screenshot.category_id == Category.id)
-                .join(Notification, Screenshot.id == Notification.screenshot_id)
+                .outerjoin(Notification, Screenshot.id == Notification.screenshot_id)
                 .options(joinedload(Screenshot.category))
             )
             if keywords:
@@ -45,8 +45,8 @@ class ScreenshotRepository(IScreenshotRepository):
             if unused_only:
                 query = query.filter(Screenshot.is_used == False)
 
-            total_count = query.count()
             screenshots = query.all()
+            total_count = len(screenshots)
             
             screenshot_vos = []
             for screenshot in screenshots:
