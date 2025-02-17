@@ -93,10 +93,13 @@ class NotificationRepository(INotificationRepository):
                 db.delete(notification)
                 db.commit()
 
-    def delete_all(self, user_id: str):
+    def delete_all(self, user_id: str, screenshot_id: str):
         """ 사용자의 모든 알림 삭제 """
         with SessionLocal() as db:
-            db.query(Notification).filter(Notification.user_id == user_id).delete()
+            db.query(Notification).filter(
+                Notification.user_id == user_id,
+                Notification.screenshot_id == screenshot_id,
+            ).delete()
             db.commit()
 
     def mark_notification_as_sent(self, user_id: str, notification_id: str) -> dict:

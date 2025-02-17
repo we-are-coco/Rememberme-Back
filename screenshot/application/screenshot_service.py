@@ -11,6 +11,7 @@ from utils.ai import AImodule
 from screenshot.infra.storage.azure_blob import AzureBlobStorage
 import os
 from utils.logger import logger
+from utils.common import get_time_description
 
 
 class ScreenshotService:
@@ -81,6 +82,7 @@ class ScreenshotService:
                 user_id=user_id,
                 screenshot_id=screenshot_id,
                 notification_time=notification,
+                time_description=get_time_description(notification),
                 is_sent=False,
                 message=f"{category.name if category else "??"} 알림 {notification.strftime('%Y-%m-%d %H:%M')}",
                 created_at=datetime.now(),
@@ -165,7 +167,7 @@ class ScreenshotService:
                 setattr(screenshot, field, value)
 
         if notifications is not None:
-            self.notification_repo.delete_all(user_id=user_id)
+            self.notification_repo.delete_all(user_id=user_id, screenshot_id=screenshot_id)
             notification_vos = []
             for notification in notifications:
                 notification_vos.append(Notification(
@@ -173,6 +175,7 @@ class ScreenshotService:
                     user_id=user_id,
                     screenshot_id=screenshot_id,
                     notification_time=notification,
+                    time_description=get_time_description(notification),
                     is_sent=False,
                     message=f"{screenshot.category.name} 알림 {notification.strftime('%Y-%m-%d %H:%M')}",
                     created_at=datetime.now(),
