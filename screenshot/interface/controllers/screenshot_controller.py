@@ -212,3 +212,13 @@ def mark_screenshot_as_used(
     ) -> ScreenshotResponse:
        screenshot = screenshot_service.set_used(current_user.id, screenshot_id, used)
        return asdict(screenshot)
+
+
+@router.post("/delete/outdated", response_model=ScreenshotResponse)
+@inject
+def delete_all_screenshots(
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    screenshot_service: ScreenshotService = Depends(Provide[Container.screenshot_service])
+):
+    screenshot_service.delete_outdated(current_user.id)
+    

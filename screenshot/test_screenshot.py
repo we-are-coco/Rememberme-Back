@@ -248,3 +248,39 @@ def test_set_is_used(get_user, get_category, screenshot_service, notification_se
 
     screenshot = screenshot_service.set_used(user.id, screenshot.id, False)
     assert screenshot.is_used == False
+
+
+def test_delete_outdated_screenshot(get_user, get_category, screenshot_service, notification_service):
+    user = get_user
+    category = get_category
+
+    notification_datetime = [
+        datetime.now() - timedelta(days=1),
+        datetime.now() - timedelta(hours=2),
+    ]
+
+    screenshot = screenshot_service.create_screenshot(
+        user_id=user.id,
+        title="testtitle",
+        description="testdescription",
+        url="https://example.com/test.jpg",
+        category_id=category.id,
+        start_date=datetime.now() -  timedelta(days=2),
+        end_date=datetime.now() - timedelta(days=1),
+        price=100.0,
+        code="testcode",
+        brand="testbrand",
+        type="testtype",
+        date="2025-04-01",
+        time="12:00",
+        from_location="testfromlocation",
+        to_location="testtolocation",
+        location="testlocation",
+        details="testdetails",
+        notifications=notification_datetime
+    )
+
+    screenshot_service.delete_outdated(user.id)
+
+    total_count, screenshots = screenshot_service.get_screenshots(user_id=user.id, search_text="", unused_only=False)
+    assert len(screenshots) == 0

@@ -257,3 +257,9 @@ class ScreenshotService:
             screenshot.is_used = used
             self.screenshot_repo.update(user_id, screenshot)
         return screenshot
+    
+    def delete_outdated(self, user_id):
+        total_count, screenshots = self.screenshot_repo.get_screenshots(user_id, keywords=None, unused_only=False)
+        for screenshot in screenshots:
+            if not screenshot.is_used or screenshot.end_date < datetime.now():
+                self.screenshot_repo.delete(user_id, screenshot.id)
