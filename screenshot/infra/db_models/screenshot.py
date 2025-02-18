@@ -4,7 +4,6 @@ from sqlalchemy import Column, Integer, Text, String, DateTime, ForeignKey, Tabl
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
-from user.infra.db_models.user import User
 from category.infra.db_models.category import Category
     
 
@@ -12,7 +11,7 @@ class Screenshot(Base):
     __tablename__ = "screenshot"
     
     id = Column(String(36), primary_key=True)
-    user_id = Column(String(36), ForeignKey("user.id"), nullable=False, index=True)
+    user_id = Column(String(36), ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
     title = Column(String(255), nullable=True)
     category_id = Column(String(36), ForeignKey(Category.id), nullable=True, index=True)
     description = Column(Text, nullable=True)

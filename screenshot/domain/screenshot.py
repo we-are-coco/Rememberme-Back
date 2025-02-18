@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from datetime import datetime
-from notification.domain.notification import Notification
 from category.domain.category import Category
 
 
