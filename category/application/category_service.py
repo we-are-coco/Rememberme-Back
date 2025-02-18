@@ -23,6 +23,9 @@ class CategoryService:
 
     def get_category(self, category_id: str):
         return self.repository.get_category(category_id)
+    
+    def get_category_by_name(self, name: str):
+        return self.repository.find_by_name(name)
 
     def update_category(self, category):
         return self.repository.update_category(category)

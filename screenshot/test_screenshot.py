@@ -1,6 +1,4 @@
 import pytest
-from fastapi.testclient import TestClient
-from main import app
 from user.infra.repository.user_repo import UserRepository
 from screenshot.infra.repository.screenshot_repo import ScreenshotRepository
 from screenshot.application.screenshot_service import ScreenshotService
@@ -19,7 +17,6 @@ from user.domain.user import User
 from database import Base, engine
 
 
-client = TestClient(app)
 
 @pytest.fixture(scope="session", autouse=True)
 def setup_and_teardown():
@@ -82,7 +79,9 @@ def category_service(category_repo):
 
 @pytest.fixture
 def get_category(category_service):
-    category = category_service.create_category("testcategoryname")
+    category = category_service.create_category("상품권")
+    category = category_service.create_category("교통")
+    category = category_service.create_category("쿠폰")
     yield category
     category_service.delete_category(category_id=category.id)
 
@@ -93,6 +92,42 @@ def notification_repo():
 @pytest.fixture
 def notification_service(notification_repo):
     return NotificationService(notification_repo)
+
+
+@pytest.fixture
+def testscreenshot(get_user, get_category, screenshot_service):
+    user = get_user
+    category = get_category
+
+    notification_vos = [
+        datetime.now(),
+        datetime.now() + timedelta(days=2),
+        datetime.now() + timedelta(days=1),
+        datetime.now() - timedelta(days=1),
+        datetime.now() - timedelta(hours=2),
+    ]
+
+    screenshot = screenshot_service.create_screenshot(
+        user_id=user.id, 
+        title="testtitle", 
+        category_id=category.id, 
+        description="testdescription", 
+        url="https://example.com/test.jpg", 
+        start_date=datetime.now(), 
+        end_date=datetime.now() + timedelta(days=1), 
+        price=100.0, 
+        code="testcode",
+        brand="testbrand",
+        type="testtype",
+        date="2025-04-01",
+        time="12:00",
+        from_location="testfromlocation", 
+        to_location="testtolocation",
+        location="testlocation",
+        details="testdetails",
+        notifications=notification_vos,
+    )
+    yield user, category, screenshot
 
 
 def test_create_screenshot_기본(get_user, screenshot_service, get_category):
@@ -126,34 +161,8 @@ def test_create_screenshot_기본(get_user, screenshot_service, get_category):
     assert screenshot.url == "https://example.com/test.jpg"
 
 
-def test_create_screenshot_with_notifications(get_user, get_category, screenshot_service, notification_service):
-    user = get_user
-    category = get_category
-
-    notification_vos = [
-        datetime.now(),
-        datetime.now() + timedelta(days=1)
-    ]
-    screenshot = screenshot_service.create_screenshot(
-        user_id=user.id,
-        title="testtitle",
-        description="testdescription",
-        url="https://example.com/test.jpg",
-        category_id=category.id,
-        start_date=datetime.now(),
-        end_date=datetime.now() + timedelta(days=1),
-        price=100.0,
-        code="testcode",
-        brand="testbrand",
-        type="testtype",
-        date="2025-04-01",
-        time="12:00",
-        from_location="testfromlocation",
-        to_location="testtolocation",
-        location="testlocation",
-        details="testdetails",
-        notifications=notification_vos
-    )
+def test_create_screenshot_with_notifications(testscreenshot, screenshot_service, notification_service):
+    user, category, screenshot = testscreenshot
 
     screenshot = screenshot_service.get_screenshot(user.id, screenshot.id)
     assert screenshot.title == "testtitle"
@@ -161,39 +170,12 @@ def test_create_screenshot_with_notifications(get_user, get_category, screenshot
     assert screenshot.url == "https://example.com/test.jpg"
     assert screenshot.category_id == category.id
 
-    notifications = notification_service.get_notifications(user_id=user.id, page=1, items_per_page=10)
-    assert len(notifications) == 2
+    total_count, notifications = notification_service.get_notifications(user_id=user.id, page=1, items_per_page=10)
+    assert len(notifications) == 5
 
 
-def test_create_screenshot_with_notification_and_delete_notification(get_user, get_category, screenshot_service, notification_service):
-    user = get_user
-    category = get_category
-
-    notification_vos = [
-        datetime.now(),
-        datetime.now() + timedelta(hours=1)
-    ]
-
-    screenshot = screenshot_service.create_screenshot(
-        user_id=user.id,
-        title="testtitle",
-        description="testdescription",
-        url="https://example.com/test.jpg",
-        category_id=category.id,
-        start_date=datetime.now(),
-        end_date=datetime.now() + timedelta(days=1),
-        price=100.0,
-        code="testcode",
-        brand="testbrand",
-        type="testtype",
-        date="2025-04-01",
-        time="12:00",
-        from_location="testfromlocation",
-        to_location="testtolocation",
-        location="testlocation",
-        details="testdetails",
-        notifications=notification_vos
-    )
+def test_create_screenshot_with_notification_and_delete_notification(testscreenshot, screenshot_service, notification_service):
+    user, category, screenshot = testscreenshot
 
     screenshot = screenshot_service.get_screenshot(user.id, screenshot.id)
     assert screenshot.title == "testtitle"
@@ -202,7 +184,7 @@ def test_create_screenshot_with_notification_and_delete_notification(get_user, g
     assert screenshot.category_id == category.id
 
     count, notifications = notification_service.get_notifications(user_id=user.id, page=1, items_per_page=10)
-    assert count == 2
+    assert count == 5
 
     notification_service.delete_notification(user_id=user.id, notification_id=notifications[0].id)
 
@@ -213,35 +195,8 @@ def test_create_screenshot_with_notification_and_delete_notification(get_user, g
     assert screenshot.category_id == category.id
 
 
-def test_set_is_used(get_user, get_category, screenshot_service, notification_service):
-    user = get_user
-    category = get_category
-
-    notification_vos = [
-        datetime.now(),
-        datetime.now() + timedelta(hours=1)
-    ]
-
-    screenshot = screenshot_service.create_screenshot(
-        user_id=user.id,
-        title="testtitle",
-        description="testdescription",
-        url="https://example.com/test.jpg",
-        category_id=category.id,
-        start_date=datetime.now(),
-        end_date=datetime.now() + timedelta(days=1),
-        price=100.0,
-        code="testcode",
-        brand="testbrand",
-        type="testtype",
-        date="2025-04-01",
-        time="12:00",
-        from_location="testfromlocation",
-        to_location="testtolocation",
-        location="testlocation",
-        details="testdetails",
-        notifications=notification_vos
-    )
+def test_set_is_used(testscreenshot, screenshot_service, notification_service):
+    user, category, screenshot = testscreenshot
 
     screenshot = screenshot_service.set_used(user.id, screenshot.id)
     screenshot = screenshot_service.get_screenshot(user.id, screenshot.id)
@@ -252,37 +207,19 @@ def test_set_is_used(get_user, get_category, screenshot_service, notification_se
     assert screenshot.is_used == False
 
 
-def test_delete_outdated_screenshot(get_user, get_category, screenshot_service, notification_service):
-    user = get_user
-    category = get_category
-
-    notification_datetime = [
-        datetime.now() - timedelta(days=1),
-        datetime.now() - timedelta(hours=2),
-    ]
-
-    screenshot = screenshot_service.create_screenshot(
-        user_id=user.id,
-        title="testtitle",
-        description="testdescription",
-        url="https://example.com/test.jpg",
-        category_id=category.id,
-        start_date=datetime.now() -  timedelta(days=2),
-        end_date=datetime.now() - timedelta(days=1),
-        price=100.0,
-        code="testcode",
-        brand="testbrand",
-        type="testtype",
-        date="2025-04-01",
-        time="12:00",
-        from_location="testfromlocation",
-        to_location="testtolocation",
-        location="testlocation",
-        details="testdetails",
-        notifications=notification_datetime
-    )
-
+def test_delete_outdated_screenshot(testscreenshot, screenshot_service, notification_service):
+    user, category, screenshot = testscreenshot
+    print(screenshot)
     screenshot_service.delete_outdated(user.id)
 
     total_count, screenshots = screenshot_service.get_screenshots(user_id=user.id, search_text="", unused_only=False)
-    assert len(screenshots) == 0
+    assert len(screenshots) == 3
+
+
+def test_audio_search(testscreenshot, screenshot_service):
+    """ testaudio: 다음주에 만료되는 쿠폰 찾아줘 """
+    user, category, screenshot = testscreenshot
+
+    total_count, screenshot = screenshot_service.get_screenshots_with_audio(user_id=user.id, audio_file_path='testdata/testaudio.m4a')
+    assert len(screenshot) == 1
+

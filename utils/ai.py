@@ -81,7 +81,7 @@ class AImodule:
 
         return completion.choices[0].message.content
 
-    def analyze_image(self, image: str) -> str:
+    def analyze_image(self, image: str) -> list[str]:
         unified_prompt = """
         You are an expert image analyzer and information extractor specialized in schedule-related images. Please analyze the provided image and perform the following tasks:
 
@@ -166,7 +166,7 @@ class AImodule:
         answer = self.call_azure_api(unified_prompt, image)
         answer_json = self.extract_json_from_string(answer)
 
-        return answer_json
+        return [answer_json]
 
 
 class KeyPhraseExtraction:
