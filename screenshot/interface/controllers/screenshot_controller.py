@@ -201,3 +201,14 @@ def get_screenshot_by_category(
         screenshots=[asdict(screenshot) for screenshot in screenshots]
     )
     return response
+
+@router.put("/{screenshot_id}/mark-as-used", response_model=ScreenshotResponse)
+@inject
+def mark_screenshot_as_used(
+        current_user: Annotated[CurrentUser, Depends(get_current_user)],
+        screenshot_id: int,
+        used: bool = True,
+        screenshot_service: ScreenshotService = Depends(Provide[Container.screenshot_service])
+    ) -> ScreenshotResponse:
+       screenshot = screenshot_service.set_used(current_user.id, screenshot_id, used)
+       return asdict(screenshot)
