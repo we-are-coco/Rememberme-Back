@@ -1,5 +1,6 @@
 from datetime import datetime
 from dataclasses import dataclass
+from screenshot.domain.screenshot import Screenshot
 
 @dataclass
 class Notification:

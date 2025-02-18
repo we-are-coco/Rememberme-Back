@@ -9,6 +9,8 @@ import uuid
 from datetime import datetime
 from database import SessionLocal
 from utils.common import get_time_description
+from screenshot.infra.db_models.screenshot import Screenshot
+
 
 
 class NotificationRepository(INotificationRepository):  
@@ -31,7 +33,11 @@ class NotificationRepository(INotificationRepository):
     def get_notifications(self, user_id: str, page: int, items_per_page: int):
         """ 사용자의 모든 알림 조회 (페이징) """
         with SessionLocal() as db:
-            query = db.query(Notification).filter(Notification.user_id == user_id)
+            query = (
+                db.query(Notification)
+                .filter(Notification.user_id == user_id)
+                .join(Screenshot, Notification.screenshot_id == Screenshot.id)
+            )
 
             total_count = query.count()
             notifications = (

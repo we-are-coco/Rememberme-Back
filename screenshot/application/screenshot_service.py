@@ -181,6 +181,7 @@ class ScreenshotService:
                     created_at=datetime.now(),
                     updated_at=datetime.now()
                 ))
+            screenshot.notifications = notification_vos
 
 
         self.screenshot_repo.update(user_id, screenshot)
@@ -249,4 +250,10 @@ class ScreenshotService:
             notifications=[],
         )
         return screenshot
-        
+    
+    def set_used(self, user_id, screenshot_id, used=True):
+        screenshot = self.get_screenshot(user_id, screenshot_id)
+        if screenshot:
+            screenshot.is_used = used
+            self.screenshot_repo.update(user_id, screenshot)
+        return screenshot

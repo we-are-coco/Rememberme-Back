@@ -61,6 +61,12 @@ class UserService:
             raise HTTPException(status_code=422, detail="User not found")
         return user
     
+    def get_user_by_email(self, email: str) -> User:
+        user = self.user_repo.find_by_email(email)
+        if not user:
+            raise HTTPException(status_code=422, detail="User not found")
+        return user
+    
     def delete_user(self, user_id: str):
         self.user_repo.delete(user_id)
 

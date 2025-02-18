@@ -21,13 +21,13 @@ class CategoryService:
         )
         return self.repository.create_category(category)
 
-    def get_category(self, category_id):
+    def get_category(self, category_id: str):
         return self.repository.get_category(category_id)
 
     def update_category(self, category):
         return self.repository.update_category(category)
 
-    def delete_category(self, category_id):
+    def delete_category(self, category_id: str):
         return self.repository.delete_category(category_id)
     
     def get_categories(self, page, items_per_page):

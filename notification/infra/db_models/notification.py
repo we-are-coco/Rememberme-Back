@@ -1,12 +1,13 @@
 from sqlalchemy import Column, String, DateTime, ForeignKey, Boolean, func, Text
 from sqlalchemy.orm import relationship
 from database import Base
+from screenshot.infra.db_models.screenshot import Screenshot
 
 class Notification(Base):
     __tablename__ = "notification"
 
     id = Column(String(36), primary_key=True)
-    user_id = Column(String(36), ForeignKey("user.id"), nullable=False, index=True)
+    user_id = Column(String(36), ForeignKey("user.id", ondelete="CASCADE"), nullable=False, index=True)
     screenshot_id = Column(String(36), ForeignKey("screenshot.id", ondelete="CASCADE"), nullable=False, index=True)
     notification_time = Column(DateTime, nullable=False)  # 알림을 보낼 시간
     is_sent = Column(Boolean, default=False)  # 알림 전송 여부
