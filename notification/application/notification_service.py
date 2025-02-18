@@ -36,6 +36,7 @@ class NotificationService:
         notification = self.repo.find_by_id(user_id, notification_id)
         if not notification:
             raise HTTPException(status_code=422, detail="Notification not found")
+        return notification
 
     def delete_notification(self, user_id: str, notification_id: str):
         """ 특정 알림 삭제 """
