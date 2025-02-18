@@ -139,7 +139,7 @@ class ScreenshotRepository(IScreenshotRepository):
             screenshot.to_location = screenshot_vo.to_location or screenshot.to_location
             screenshot.location = screenshot_vo.location or screenshot.location
             screenshot.details = screenshot_vo.details or screenshot.details
-            screenshot.is_used = screenshot_vo.is_used or screenshot.is_used
+            screenshot.is_used = screenshot_vo.is_used
             screenshot.updated_at = screenshot_vo.updated_at or screenshot.updated_at
 
             db.add(screenshot)

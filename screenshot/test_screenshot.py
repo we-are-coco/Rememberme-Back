@@ -244,9 +244,11 @@ def test_set_is_used(get_user, get_category, screenshot_service, notification_se
     )
 
     screenshot = screenshot_service.set_used(user.id, screenshot.id)
+    screenshot = screenshot_service.get_screenshot(user.id, screenshot.id)
     assert screenshot.is_used == True
 
     screenshot = screenshot_service.set_used(user.id, screenshot.id, False)
+    screenshot = screenshot_service.get_screenshot(user.id, screenshot.id)
     assert screenshot.is_used == False
 
 

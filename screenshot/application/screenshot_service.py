@@ -95,7 +95,7 @@ class ScreenshotService:
             category_id=category.id if category else None,
             url=url,
             start_date=start_date,
-            end_date=end_date,
+            end_date=datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M"),
             price=price,
             code=code,
             user_id=user_id,
@@ -158,7 +158,7 @@ class ScreenshotService:
             "location": location,
             "details": details,
             "start_date": start_date,
-            "end_date": end_date,
+            "end_date": datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M"),
             "is_used": is_used,
         }
 
