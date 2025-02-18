@@ -206,7 +206,7 @@ def get_screenshot_by_category(
 @inject
 def mark_screenshot_as_used(
         current_user: Annotated[CurrentUser, Depends(get_current_user)],
-        screenshot_id: int,
+        screenshot_id: str,
         used: bool = True,
         screenshot_service: ScreenshotService = Depends(Provide[Container.screenshot_service])
     ) -> ScreenshotResponse:
