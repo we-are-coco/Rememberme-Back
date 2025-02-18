@@ -9,6 +9,7 @@ from screenshot.application.screenshot_service import ScreenshotService
 from notification.interface.controllers.notification_controller import NotificationResponse
 from datetime import datetime
 from pydub import AudioSegment
+from utils.logger import logger
 import shutil
 
 
@@ -151,7 +152,12 @@ def audio_search(
     audio = AudioSegment.from_file(file_path, format="m4a")
     audio.export(f"temp/{current_user.id}.wav", format="wav")
     file_path = f"temp/{current_user.id}.wav"
-    
+    try:
+        shutil.rmtree(f"temp/{file.filename}")
+        shutil.rmtree(f"temp/{current_user.id}")
+    except Exception as e:
+        logger.error(f"Failed to remove temp directory: {e}")
+
     total_count, screenshots = screenshot_service.get_screenshots_with_audio(current_user.id, file_path)
     screenshot_responses = [ asdict(screenshot) for screenshot in screenshots ]
     response = GetScreenshotsResponse(
