@@ -54,6 +54,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: python-app
+      
+      - name: install ffmpeg
+        run: |
+          apt-get update
+          apt-get install -y ffmpeg
 
       - name: Unzip artifact for deployment
         run: unzip release.zip

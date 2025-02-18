@@ -8,6 +8,7 @@ from containers import Container
 from screenshot.application.screenshot_service import ScreenshotService
 from notification.interface.controllers.notification_controller import NotificationResponse
 from datetime import datetime
+from pydub import AudioSegment
 import shutil
 
 
@@ -137,6 +138,29 @@ def get_screenshots(
     return response
 
 
+@router.post("/audiosearch", response_model=GetScreenshotsResponse)
+@inject
+def audio_search(
+        current_user: Annotated[CurrentUser, Depends(get_current_user)],
+        file: UploadFile,
+        screenshot_service: ScreenshotService = Depends(Provide[Container.screenshot_service])
+) -> GetScreenshotsResponse:
+    file_path = f"temp/{file.filename}"
+    with open(file_path, "wb") as f:
+        shutil.copyfileobj(file.file, f)
+    audio = AudioSegment.from_file(file_path, format="m4a")
+    audio.export(f"temp/{current_user.id}.wav", format="wav")
+    file_path = f"temp/{current_user.id}.wav"
+    
+    total_count, screenshots = screenshot_service.get_screenshots_with_audio(current_user.id, file_path)
+    screenshot_responses = [ asdict(screenshot) for screenshot in screenshots ]
+    response = GetScreenshotsResponse(
+        total_count=total_count,
+        screenshots=screenshot_responses
+    )
+    return response
+
+
 @router.get("/{screenshot_id}", response_model=ScreenshotResponse)
 @inject
 def get_screenshot(
@@ -214,7 +238,7 @@ def mark_screenshot_as_used(
        return asdict(screenshot)
 
 
-@router.post("/delete/outdated", response_model=ScreenshotResponse)
+@router.post("/delete/outdated", status_code=204)
 @inject
 def delete_all_screenshots(
     current_user: Annotated[CurrentUser, Depends(get_current_user)],

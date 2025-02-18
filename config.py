@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     keyword_api_key: str
     keyword_endpoint: str
 
+    gpt_audio_key: str
+
 
 @lru_cache
 def get_settings():

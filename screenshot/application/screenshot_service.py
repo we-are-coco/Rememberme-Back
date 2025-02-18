@@ -12,6 +12,10 @@ from screenshot.infra.storage.azure_blob import AzureBlobStorage
 import os
 from utils.logger import logger
 from utils.common import get_time_description
+from utils.gpt4audio import azure_audio_request
+from utils.vectorsearch4 import VectorSearchEngine
+from collections import defaultdict
+from dataclasses import asdict
 
 
 class ScreenshotService:
@@ -28,6 +32,7 @@ class ScreenshotService:
         self.ai_module = ai_module
         self.storage = AzureBlobStorage()
         self.ulid = ULID()
+        self.vectorsearch = VectorSearchEngine(vector_dim=12, debug=False, advanced_embedding=False, base_threshold=0.6, match_threshold=0.5)
 
     def get_screenshots(
             self,
@@ -38,12 +43,19 @@ class ScreenshotService:
         keywords = search_text.split(" ")
         return self.screenshot_repo.get_screenshots(user_id, keywords, unused_only)
     
-    def get_screenshots_with_voice(
+    def get_screenshots_with_audio(
             self,
             user_id: str,
-            voice_file_path: str,
-    ):
-        pass
+            audio_file_path: str,
+            unused_only: bool = True
+    ) -> tuple[int, list[Screenshot]]:
+        keywords = azure_audio_request(audio_file_path)
+        total, screenshots = self.screenshot_repo.get_screenshots(user_id, None, unused_only)
+        data = defaultdict(list)
+        for screenshot in screenshots:
+            data[screenshot.category.name].append(asdict(screenshot))
+        results = self.vectorsearch.vector_search(data, keywords)
+        return total, screenshots
     
     def get_screenshot(
             self,
@@ -216,7 +228,7 @@ class ScreenshotService:
             file_path: str,
     ) -> Screenshot:
         url = self.storage.upload_image(file_path, f'{user_id}/{file_path}')
-        analyze_result = self.ai_module.analyze_image(file_path)
+        analyze_result = self.ai_module.analyze_image(file_path)[0]
 
         try:
             os.remove(file_path)
@@ -261,5 +273,5 @@ class ScreenshotService:
     def delete_outdated(self, user_id):
         total_count, screenshots = self.screenshot_repo.get_screenshots(user_id, keywords=None, unused_only=False)
         for screenshot in screenshots:
-            if not screenshot.is_used or screenshot.end_date < datetime.now():
+            if screenshot.is_used or screenshot.end_date < datetime.now():
                 self.screenshot_repo.delete(user_id, screenshot.id)
