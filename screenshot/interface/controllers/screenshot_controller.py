@@ -149,14 +149,6 @@ def audio_search(
     file_path = f"temp/{file.filename}"
     with open(file_path, "wb") as f:
         shutil.copyfileobj(file.file, f)
-    audio = AudioSegment.from_file(file_path, format="m4a")
-    audio.export(f"temp/{current_user.id}.wav", format="wav")
-    file_path = f"temp/{current_user.id}.wav"
-    try:
-        shutil.rmtree(f"temp/{file.filename}")
-        shutil.rmtree(f"temp/{current_user.id}")
-    except Exception as e:
-        logger.error(f"Failed to remove temp directory: {e}")
 
     total_count, screenshots = screenshot_service.get_screenshots_with_audio(current_user.id, file_path)
     screenshot_responses = [ asdict(screenshot) for screenshot in screenshots ]
