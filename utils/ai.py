@@ -8,6 +8,7 @@ from typing import BinaryIO
 from config import get_settings
 from azure.core.credentials import AzureKeyCredential
 from azure.ai.textanalytics import TextAnalyticsClient
+from collections import defaultdict
 
 
 settings = get_settings()
@@ -169,20 +170,20 @@ class AImodule:
         return [answer_json]
 
 
-class KeyPhraseExtraction:
-    def __init__(self):
-        self.endpoint = settings.keyword_endpoint
-        self.key = settings.keyword_api_key
-        self.client = TextAnalyticsClient(
-            endpoint=self.endpoint, 
-            credential=AzureKeyCredential(self.key)
-        )
-    def extract_keywords(self, text):
-        if not text:
-            print("입력된 텍스트가 없습니다.")
-            return []
-        
-        response = self.client.extract_key_phrases([text], language="ko")
-        for document in response:
-            print(f"추출된 키워드: {document.key_phrases}")
-            return document.key_phrases
+def extract_data_from_screenshots(screenshots):
+    keyd ={
+        "쿠폰": ["brand", "type", "title", "date", "time", "code", "description"],
+        "교통": ["type", "from_location", "to_location", "date", "time", "description"],
+        "엔터테인먼트": ["type", "title", "date", "time", "location", "description"],
+        "약속": ["type", "date", "time", "location", "details", "description"],
+        "불명": ["type", "date", "time", "description"]
+    }
+    data = defaultdict(list)
+    for screenshot in screenshots:
+        for key, value_list in keyd.items():
+            if key == screenshot.get('category').name:
+                ns = {'category': key }
+                for value in value_list:
+                    ns[value] = screenshot.get(value)
+                data[key].append(ns)
+    return dict(data)

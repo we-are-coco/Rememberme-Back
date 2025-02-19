@@ -14,6 +14,7 @@ from utils.logger import logger
 from utils.common import get_time_description
 from utils.gpt4audio import azure_audio_request
 from utils.vectorsearch4 import VectorSearchEngine
+from utils.ai import extract_data_from_screenshots
 from collections import defaultdict
 from dataclasses import asdict
 from pydub import AudioSegment
@@ -59,18 +60,16 @@ class ScreenshotService:
 
         keywords = azure_audio_request(audio_file_path)
         total, screenshots = self.screenshot_repo.get_screenshots(user_id, None, unused_only)
-        data = defaultdict(list)
-        for screenshot in screenshots:
-            data[screenshot.category.name].append(asdict(screenshot))
+        data = extract_data_from_screenshots([asdict(screenshot) for screenshot in screenshots])
         results = self.vectorsearch.vector_search(data, keywords)
+        print(data, results)
 
         try:
-            os.remove(f"temp/{file_path}")
-            os.remove(f"temp/{user_id}")
+            os.remove(file_path)
+            os.remove(audio_file_path)
         except Exception as e:
             logger.error(f"Failed to remove temp directory: {e}")
 
-        print(results)
         return total, screenshots
     
     def get_screenshot(
