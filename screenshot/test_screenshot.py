@@ -79,11 +79,13 @@ def category_service(category_repo):
 
 @pytest.fixture
 def get_category(category_service):
-    category = category_service.create_category("상품권")
-    category = category_service.create_category("교통")
-    category = category_service.create_category("쿠폰")
-    yield category
-    category_service.delete_category(category_id=category.id)
+    unknown = category_service.create_category("불명")
+    transportation = category_service.create_category("교통")
+    coupon = category_service.create_category("쿠폰")
+    yield coupon
+    category_service.delete_category(category_id=coupon.id)
+    category_service.delete_category(category_id=transportation.id)
+    category_service.delete_category(category_id=unknown.id)
 
 @pytest.fixture
 def notification_repo():
@@ -119,8 +121,8 @@ def testscreenshot(get_user, get_category, screenshot_service):
         code="testcode",
         brand="testbrand",
         type="testtype",
-        date="2025-04-01",
-        time="12:00",
+        date=datetime.strftime(datetime.now()+ timedelta(days=1), "%Y-%m-%d"), 
+        time=datetime.strftime(datetime.now()+ timedelta(days=1), "%H:%M"), 
         from_location="testfromlocation", 
         to_location="testtolocation",
         location="testlocation",
@@ -209,17 +211,36 @@ def test_set_is_used(testscreenshot, screenshot_service, notification_service):
 
 def test_delete_outdated_screenshot(testscreenshot, screenshot_service, notification_service):
     user, category, screenshot = testscreenshot
-    print(screenshot)
+    screenshot = screenshot_service.create_screenshot(
+        user_id=user.id, 
+        title="testtitle", 
+        category_id=category.id, 
+        description="testdescription", 
+        url="https://example.com/test.jpg", 
+        start_date=datetime.now(), 
+        end_date=datetime.now() + timedelta(days=1), 
+        price=100.0, 
+        code="testcode",
+        brand="testbrand",
+        type="testtype",
+        date="2024-04-01",
+        time="12:00",
+        from_location="testfromlocation", 
+        to_location="testtolocation",
+        location="testlocation",
+        details="testdetails",
+        notifications=[]
+    )
     screenshot_service.delete_outdated(user.id)
 
     total_count, screenshots = screenshot_service.get_screenshots(user_id=user.id, search_text="", unused_only=False)
-    assert len(screenshots) == 3
+    assert len(screenshots) == 1
 
 
 def test_audio_search(testscreenshot, screenshot_service):
     """ testaudio: 다음주에 만료되는 쿠폰 찾아줘 """
     user, category, screenshot = testscreenshot
 
-    total_count, screenshot = screenshot_service.get_screenshots_with_audio(user_id=user.id, audio_file_path='testdata/testaudio.m4a')
+    total_count, screenshot = screenshot_service.get_screenshots_with_audio(user_id=user.id, file_path='testdata/testaudio.m4a')
     assert len(screenshot) == 1
 

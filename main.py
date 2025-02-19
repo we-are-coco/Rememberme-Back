@@ -10,6 +10,8 @@ from category.interface.controllers.category_controller import router as categor
 from contextlib import asynccontextmanager
 
 from notification_worker import check_and_send_notifications
+from utils.logger import logger
+
 
 
 def create_temp_directory():
@@ -34,6 +36,7 @@ app.include_router(category_router)
 
 @app.get("/")
 def hello():
+    logger.debug("debug: Hello World")
     return {"Hello": "World"}
 
 log_config = uvicorn.config.LOGGING_CONFIG

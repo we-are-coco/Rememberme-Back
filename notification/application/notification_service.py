@@ -4,6 +4,7 @@ from notification.domain.notification import Notification
 from ulid import ULID
 from dependency_injector.wiring import inject
 from fastapi.exceptions import HTTPException
+from utils.common import get_time_description
 
 
 class NotificationService:
@@ -19,6 +20,7 @@ class NotificationService:
             user_id=user_id,
             screenshot_id=screenshot_id,
             notification_time=notification_time,
+            time_description=get_time_description(notification_time),
             message=message,
             is_sent=False,
             created_at=datetime.now(),
