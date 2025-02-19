@@ -1,0 +1,36 @@
+name: Build and deploy container app to Azure container App - cocoremember
+
+on:
+  push:
+    branches:
+      - dev
+    workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: log in to Azure Container Registry
+        uses: azure/docker-login@v2
+        with:
+         login-server: ${{ secrets.AZUREREGISTRYSERVER }}
+         username: ${{ secrets.AZUREREGISTRYUSER }}
+         password: ${{ secrets.AZUREREGISTRYPASSWORD }}
+      - run: |
+            docker build . -t ${{ secrets.AZUREREGISTRYSERVER }}/cocoremember:${{ github.sha }}
+            docker push ${{ secrets.AZUREREGISTRYSERVER }}/cocoremember:${{ github.sha }}
+
+      - name: 'Deploy to Azure Container Instances'
+        uses: 'azure/aci-deploy@v1'
+        with:
+          resource-group: ${{ secrets.RESOURCE_GROUP }}
+          dns-name-label: ${{ secrets.RESOURCE_GROUP }}${{ github.run_number }}
+          image: ${{ secrets.AZUREREGISTRYSERVER }}/sampleapp:${{ github.sha }}
+          registry-login-server: ${{ secrets.AZUREREGISTRYSERVER }}
+          registry-username: ${{ secrets.AZUREREGISTRYUSER }}
+          registry-password: ${{ secrets.AZUREREGISTRYPASSWORD }}
+          name: cocoremember
+          location: 'North Central US'
