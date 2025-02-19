@@ -74,4 +74,4 @@ firebase_admin==6.6.0
 faiss-cpu==1.10.0
 ffprobe==0.5
 pydub==0.25.1
-imageio-ffmpeg-0.6.0
+imageio-ffmpeg==0.6.0
