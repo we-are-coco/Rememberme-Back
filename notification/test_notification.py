@@ -102,3 +102,18 @@ def test_find_notification(testuser, testscreenshot, notification_service):
     user = testuser
     notifications = notification_service.get_notifications(user.id, 1, 10)
     assert len(notifications) == 2
+
+
+def test_create_notification(testuser, testscreenshot, notification_service):
+    user = testuser
+    screenshot = testscreenshot
+
+    notification_service.create_notification(
+        user_id=user.id,
+        screenshot_id=screenshot.id,
+        notification_time=datetime.now() + timedelta(days=1),
+        message="Test Notification",
+    )
+
+    total, notifications = notification_service.get_notifications(user.id, 1, 10)
+    assert len(notifications) == 3
