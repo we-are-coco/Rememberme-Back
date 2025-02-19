@@ -13,19 +13,12 @@ from notification_worker import check_and_send_notifications
 from utils.logger import logger
 
 
-def setup_ffmpeg():
-    import imageio_ffmpeg
-    from pydub import AudioSegment
-    ffmpeg_path = imageio_ffmpeg.get_ffmpeg_exe()
-    print(ffmpeg_path)
-    AudioSegment.converter = ffmpeg_path
 
 def create_temp_directory():
     if not os.path.exists("temp"):
         os.makedirs("temp")
 
 create_temp_directory()
-setup_ffmpeg()
 
 
 @asynccontextmanager
