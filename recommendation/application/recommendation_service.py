@@ -23,8 +23,10 @@ class RecommendationService:
         data = extract_data_from_screenshots([asdict(screenshot) for screenshot in screenshots])
         results = infer(data, days)
 
+        screenshot_dict = {screenshot.id: screenshot for screenshot in screenshots}
         coupons = [ {
             "screenshot_id": result["id"],
+            "brand": screenshot_dict[result["id"]].get("brand", None),
             "is_reco": result["is_reco"],
             "reco_date": result.get("reco_date", None),
             "reco_time": result.get("reco_time", None),

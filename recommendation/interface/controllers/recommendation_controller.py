@@ -16,6 +16,7 @@ class RecommendationResponse(BaseModel):
     reco_date: str | None
     reco_time: str | None
     item: str | None
+    brand: str | None
     description: str | None
 
 
