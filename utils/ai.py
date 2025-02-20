@@ -181,9 +181,10 @@ def extract_data_from_screenshots(screenshots):
     data = defaultdict(list)
     for screenshot in screenshots:
         for key, value_list in keyd.items():
-            if key == screenshot.get('category').name:
+            category = screenshot.get('category')
+            if category is not None and key == category.name:
                 ns = {'category': key }
                 for value in value_list+['id']:
-                    ns[value] = screenshot.get(value)
+                    ns[value] = screenshot.get(value, None)
                 data[key].append(ns)
     return dict(data)
