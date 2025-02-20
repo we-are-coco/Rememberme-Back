@@ -27,6 +27,7 @@ class UserResponse(BaseModel):
     id: str
     name: str
     email: EmailStr
+    fcm_token: str | None
     created_at: datetime
     updated_at: datetime
 

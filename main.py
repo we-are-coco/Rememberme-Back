@@ -6,6 +6,7 @@ from user.interface.controllers.user_controller import router as user_router
 from screenshot.interface.controllers.screenshot_controller import router as screenshot_router
 from notification.interface.controllers.notification_controller import router as notification_router
 from category.interface.controllers.category_controller import router as category_router
+from recommendation.interface.controllers.recommendation_controller import router as recommendation_router
 
 from contextlib import asynccontextmanager
 
@@ -33,6 +34,7 @@ app.include_router(user_router)
 app.include_router(screenshot_router)
 app.include_router(notification_router)
 app.include_router(category_router)
+app.include_router(recommendation_router)
 
 @app.get("/")
 def hello():

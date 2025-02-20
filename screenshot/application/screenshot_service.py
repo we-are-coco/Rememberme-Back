@@ -14,10 +14,10 @@ from utils.logger import logger
 from utils.common import get_time_description
 from utils.gpt4audio import azure_audio_request
 from utils.vectorsearch4 import VectorSearchEngine
+from utils.ai import extract_data_from_screenshots
 from collections import defaultdict
 from dataclasses import asdict
 from pydub import AudioSegment
-import imageio_ffmpeg
 
 
 class ScreenshotService:
@@ -35,8 +35,6 @@ class ScreenshotService:
         self.storage = AzureBlobStorage()
         self.ulid = ULID()
         self.vectorsearch = VectorSearchEngine(vector_dim=12, debug=False, advanced_embedding=False, base_threshold=0.6, match_threshold=0.5)
-        self.ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
-        AudioSegment.converter = self.ffmpeg
 
     def get_screenshots(
             self,
@@ -59,18 +57,16 @@ class ScreenshotService:
 
         keywords = azure_audio_request(audio_file_path)
         total, screenshots = self.screenshot_repo.get_screenshots(user_id, None, unused_only)
-        data = defaultdict(list)
-        for screenshot in screenshots:
-            data[screenshot.category.name].append(asdict(screenshot))
+        data = extract_data_from_screenshots([asdict(screenshot) for screenshot in screenshots])
         results = self.vectorsearch.vector_search(data, keywords)
+        #print(data, keywords, results)
 
         try:
-            os.remove(f"temp/{file_path}")
-            os.remove(f"temp/{user_id}")
+            os.remove(file_path)
+            os.remove(audio_file_path)
         except Exception as e:
             logger.error(f"Failed to remove temp directory: {e}")
 
-        print(results)
         return total, screenshots
     
     def get_screenshot(

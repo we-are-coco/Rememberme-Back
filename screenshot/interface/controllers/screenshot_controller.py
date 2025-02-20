@@ -146,7 +146,7 @@ def audio_search(
         file: UploadFile,
         screenshot_service: ScreenshotService = Depends(Provide[Container.screenshot_service])
 ) -> GetScreenshotsResponse:
-    file_path = f"temp/{file.filename}"
+    file_path = f"temp/{current_user.id}.m4a"
     with open(file_path, "wb") as f:
         shutil.copyfileobj(file.file, f)
 
