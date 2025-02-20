@@ -26,7 +26,7 @@ class RecommendationService:
         screenshot_dict = {screenshot.id: screenshot for screenshot in screenshots}
         coupons = [ {
             "screenshot_id": result["id"],
-            "brand": screenshot_dict[result["id"]].get("brand", None),
+            "brand": screenshot_dict[result["id"]].brand,
             "is_reco": result["is_reco"],
             "reco_date": result.get("reco_date", None),
             "reco_time": result.get("reco_time", None),
