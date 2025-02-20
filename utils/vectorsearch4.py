@@ -368,7 +368,7 @@ class VectorSearchEngine:
         ]
 
         if not qualified_docs:
-            return [{"result": "검색 결과 없음"}]  # No search results
+            return []  # No search results
 
         # 점수 기준 내림차순 정렬
         # Sort by score in descending order
@@ -399,5 +399,5 @@ class VectorSearchEngine:
                 doc_copy["_debug"] = debug_info
             final_docs.append(doc_copy)
 
-        return final_docs if final_docs else [{"result": "검색 결과 없음"}]
+        return final_docs if final_docs else []
     
