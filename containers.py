@@ -8,6 +8,7 @@ from notification.infra.repository.notification_repo import NotificationReposito
 from notification.application.notification_service import NotificationService
 from category.infra.repository.category_repo import CategoryRepository
 from category.application.category_service import CategoryService
+from recommendation.application.recommendation_service import RecommendationService
 
 from utils.ai import AImodule
 
@@ -15,7 +16,7 @@ from utils.ai import AImodule
 
 class Container(containers.DeclarativeContainer):
     wiring_config = containers.WiringConfiguration(
-        packages=["user", "screenshot", "notification", "category"],
+        packages=["user", "screenshot", "notification", "category", "recommendation"],
     )
 
     user_repo = providers.Factory(UserRepository)
@@ -36,3 +37,5 @@ class Container(containers.DeclarativeContainer):
         category_repo=category_repo,
         ai_module=ai_module
     )
+
+    recommendation_service = providers.Factory(RecommendationService, screenshot_repo=screenshot_repo)

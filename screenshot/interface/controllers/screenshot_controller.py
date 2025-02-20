@@ -8,8 +8,6 @@ from containers import Container
 from screenshot.application.screenshot_service import ScreenshotService
 from notification.interface.controllers.notification_controller import NotificationResponse
 from datetime import datetime
-from pydub import AudioSegment
-from utils.logger import logger
 import shutil
 
 

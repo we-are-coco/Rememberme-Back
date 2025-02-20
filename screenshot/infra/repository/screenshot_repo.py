@@ -59,8 +59,8 @@ class ScreenshotRepository(IScreenshotRepository):
 
                 screenshot_vo = ScreenshotVO(**row_to_dict(screenshot))
                 screenshot_vo.notifications = notification_vos
-                screenshot_vo.date = screenshot.date if screenshot.date else datetime.now().strftime('%Y-%m-%d')
-                screenshot_vo.time = screenshot.time if screenshot.time else datetime.now().strftime('%H:%M')
+                screenshot_vo.date = screenshot_vo.date if screenshot_vo.date else '2099-12-31'
+                screenshot_vo.time = screenshot_vo.time if screenshot_vo.time else '00:00'
                 screenshot_vos.append(screenshot_vo)
             return total_count, screenshot_vos
 
