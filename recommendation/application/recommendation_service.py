@@ -1,11 +1,16 @@
-
+from screenshot.domain.repository.screenshot_repo import IScreenshotRepository
+from dependency_injector.wiring import inject
+from utils.ai import extract_data_from_screenshots
+from utils.infer import infer
+from dataclasses import asdict
 
 class RecommendationService:
-    def recommend_coupons(self, user_id, start_date, end_date):
-        # Implement logic to find coupons for the given user within the specified date range
-        coupons = [
-            {"id": 1, "title": "50% Off on All Products", "date": "2023-04-01", "screenshot_id": "4567"},
-            {"id": 2, "title": "Free Shipping on Orders Over $50", "date": "2023-04-01", "screenshot_id": "1234"}
-        ]
+    @inject
+    def __init__(self, screenshot_repo: IScreenshotRepository):
+        self.screenshot_repo = screenshot_repo
 
-        return coupons
+    def recommend_coupons(self, user_id: str, days: int) -> list:
+        total, screenshots = self.screenshot_repo.get_screenshots(user_id=user_id, keywords=None, unused_only=True)
+        data = extract_data_from_screenshots([asdict(screenshot) for screenshot in screenshots])
+        results = infer(data, days)
+        return results

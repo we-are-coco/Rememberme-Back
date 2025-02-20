@@ -12,6 +12,7 @@ from utils.db_utils import row_to_dict
 from fastapi import HTTPException
 from dataclasses import asdict
 from utils.common import get_time_description
+from datetime import datetime
 
 
 class ScreenshotRepository(IScreenshotRepository):
@@ -58,6 +59,8 @@ class ScreenshotRepository(IScreenshotRepository):
 
                 screenshot_vo = ScreenshotVO(**row_to_dict(screenshot))
                 screenshot_vo.notifications = notification_vos
+                screenshot_vo.date = screenshot_vo.date if screenshot_vo.date else '2099-12-31'
+                screenshot_vo.time = screenshot_vo.time if screenshot_vo.time else '00:00'
                 screenshot_vos.append(screenshot_vo)
             return total_count, screenshot_vos
 
