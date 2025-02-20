@@ -18,7 +18,6 @@ from utils.ai import extract_data_from_screenshots
 from collections import defaultdict
 from dataclasses import asdict
 from pydub import AudioSegment
-import imageio_ffmpeg
 
 
 class ScreenshotService:
@@ -36,8 +35,6 @@ class ScreenshotService:
         self.storage = AzureBlobStorage()
         self.ulid = ULID()
         self.vectorsearch = VectorSearchEngine(vector_dim=12, debug=False, advanced_embedding=False, base_threshold=0.6, match_threshold=0.5)
-        self.ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
-        AudioSegment.converter = self.ffmpeg
 
     def get_screenshots(
             self,
@@ -62,7 +59,7 @@ class ScreenshotService:
         total, screenshots = self.screenshot_repo.get_screenshots(user_id, None, unused_only)
         data = extract_data_from_screenshots([asdict(screenshot) for screenshot in screenshots])
         results = self.vectorsearch.vector_search(data, keywords)
-        print(data, results)
+        #print(data, keywords, results)
 
         try:
             os.remove(file_path)
