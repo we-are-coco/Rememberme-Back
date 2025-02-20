@@ -1,5 +1,6 @@
 import base64
 import time
+import json
 from openai import AzureOpenAI
 from config import get_settings
 
@@ -74,4 +75,4 @@ def azure_audio_request(file_path):
                 }
             ]
         )
-        return completion.choices[0].message.audio.transcript
+        return json.loads(completion.choices[0].message.audio.transcript)

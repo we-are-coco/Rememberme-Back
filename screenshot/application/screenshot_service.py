@@ -34,7 +34,7 @@ class ScreenshotService:
         self.ai_module = ai_module
         self.storage = AzureBlobStorage()
         self.ulid = ULID()
-        self.vectorsearch = VectorSearchEngine(vector_dim=12, debug=False, advanced_embedding=False, base_threshold=0.6, match_threshold=0.5)
+        self.vectorsearch = VectorSearchEngine(vector_dim=12, debug=False, advanced_embedding=True, base_threshold=0.6, match_threshold=0.5)
 
     def get_screenshots(
             self,
@@ -59,7 +59,9 @@ class ScreenshotService:
         total, screenshots = self.screenshot_repo.get_screenshots(user_id, None, unused_only)
         data = extract_data_from_screenshots([asdict(screenshot) for screenshot in screenshots])
         results = self.vectorsearch.vector_search(data, keywords)
-        #print(data, keywords, results)
+
+        total = len(results)
+        screenshots = [ self.screenshot_repo.find_by_id(user_id, screenshot['id']) for screenshot in results ]
 
         try:
             os.remove(file_path)

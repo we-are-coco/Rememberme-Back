@@ -10,4 +10,4 @@ def recommendation_service():
 
 def test_get_recommendations(recommendation_service):
     # Assuming there are some books in the database that can be recommended
-    recommendations = recommendation_service.get_recommendations()
+    recommendations = recommendation_service.recommend_coupons()
