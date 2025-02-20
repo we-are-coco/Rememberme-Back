@@ -11,11 +11,12 @@ router = APIRouter(prefix="/recommendations")
 
 
 class RecommendationResponse(BaseModel):
-    id: str
+    screenshot_id: str
     is_reco: bool
-    reco_date: str
-    reco_time: str
-    item: str
+    reco_date: str | None
+    reco_time: str | None
+    item: str | None
+    description: str | None
 
 
 @router.post("/coupon", response_model=list[RecommendationResponse])
