@@ -38,6 +38,9 @@ def check_and_send_notifications():
         print(f"🔔 Found {len(pending_notifications)} pending notifications.")
     
     for notification, fcm_token in pending_notifications:
+        if not fcm_token or notification.message is not None:
+            continue
+        print(f"fcm: {fcm_token}, notification message: {notification.message}")
         send_push_notification(fcm_token, { "message": notification.message })
 
         # 알림을 보낸 것으로 업데이트
