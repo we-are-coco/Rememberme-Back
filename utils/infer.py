@@ -91,8 +91,8 @@ def infer(data=1, days=30):
         result.append({
             "is_reco": False,
             "id": id_val,
-            "fixed_date": event.date.strftime("%Y-%m-%d") if isinstance(event.date, datetime.date) else event.date,
-            "fixed_time": event.time,
+            "reco_date": event.date.strftime("%Y-%m-%d") if isinstance(event.date, datetime.date) else event.date,
+            "reco_time": event.time,
             "description": event.data.get("description", "")
         })
 
