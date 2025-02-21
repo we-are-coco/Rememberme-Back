@@ -117,3 +117,21 @@ def test_create_notification(testuser, testscreenshot, notification_service):
 
     total, notifications = notification_service.get_notifications(user.id, 1, 10)
     assert len(notifications) == 3
+
+
+def test_mark_as_sent(testuser, testscreenshot, notification_service):
+    user = testuser
+    screenshot = testscreenshot
+
+    noti = notification_service.create_notification(
+        user_id=user.id,
+        screenshot_id=screenshot.id,
+        notification_time=datetime.now() + timedelta(days=1),
+        message="Test Notification",
+    )
+
+    notification = notification_service.get_notification(user.id, notification_id=noti.id)
+    assert notification.is_sent is False
+    notification_service.mark_notification_as_sent(user.id, notification.id)
+    notification = notification_service.get_notification(user.id, notification_id=noti.id)
+    assert notification.is_sent is True

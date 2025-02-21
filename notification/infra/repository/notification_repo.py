@@ -84,7 +84,9 @@ class NotificationRepository(INotificationRepository):
                 notification.updated_at = datetime.now()
                 db.commit()
                 db.refresh(notification)
-                return notification
+                notification_vo = row_to_dict(notification)
+                notification_vo['time_description'] = get_time_description(notification.notification_time)
+                return NotificationVO(**notification_vo)
             return None
 
     def delete(self, user_id: str, notification_id: str):
@@ -108,7 +110,7 @@ class NotificationRepository(INotificationRepository):
             ).delete()
             db.commit()
 
-    def mark_notification_as_sent(self, user_id: str, notification_id: str) -> dict:
+    def mark_notification_as_sent(self, user_id: str, notification_id: str) -> NotificationVO:
         """ 특정 알림을 '보낸 상태'로 변경 """
         with SessionLocal() as db:
             notification = db.query(Notification).filter(
@@ -121,7 +123,9 @@ class NotificationRepository(INotificationRepository):
                 notification.updated_at = datetime.now()
                 db.commit()
                 db.refresh(notification)
-                return row_to_dict(notification)
+                noti_dict = row_to_dict(notification)
+                noti_dict['time_description'] = get_time_description(notification.notification_time)
+                return NotificationVO(**noti_dict)
 
             return None
 
@@ -155,4 +159,11 @@ class NotificationRepository(INotificationRepository):
             ]
             db.add_all(notifications)
             db.commit()
-            return notifications
+            noti_vos = []
+            for notification in notifications:
+                noti_dict = row_to_dict(notification)
+                noti_dict["time_description"] = get_time_description(notification.notification_time)
+                noti_vo = NotificationVO(**noti_dict)
+                noti_vos.append(noti_vo)
+
+            return noti_vos

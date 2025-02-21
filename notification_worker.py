@@ -14,13 +14,13 @@ def download_fcm():
     storage.download_image("rememberme_fcm.json", "./rememberme_fcm.json")
 
 
-def send_push_notification(notification: dict):
+def send_push_notification(fcm_token, notification: dict):
     message = messaging.Message(
         notification=messaging.Notification(
             title="RememberMe 알림",
-            body=notification.message
+            body=notification.get("message")
         ),
-        token=notification.fcm_token
+        token=fcm_token
     )
 
     response = messaging.send(message)
@@ -36,12 +36,12 @@ def check_and_send_notifications():
 
     if pending_notifications:
         print(f"🔔 Found {len(pending_notifications)} pending notifications.")
-    for notification in pending_notifications:
-        # TODO: FCM 푸시 전송 로직 추가
-        print(f"🔔 Sending notification to user {notification.user_id} for screenshot {notification.screenshot_id} at {notification.notification_time}")
+    
+    for notification, fcm_token in pending_notifications:
+        send_push_notification(fcm_token, { "message": notification.message })
 
         # 알림을 보낸 것으로 업데이트
-        notification_service.mark_notification_as_sent(notification.id)
+        notification_service.mark_notification_as_sent(notification.user_id, notification.id)
 
 
 def fcm_startup():
