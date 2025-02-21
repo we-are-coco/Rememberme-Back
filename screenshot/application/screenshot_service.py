@@ -20,6 +20,26 @@ from dataclasses import asdict
 from pydub import AudioSegment
 
 
+def get_notification_message(
+        category_name: str, 
+        title: str,
+        to_location: str, 
+        from_location: str, 
+        type: str, 
+        description: str, 
+        notification: datetime
+    ) -> str:
+    noti_date = datetime.strftime(notification, '%m-%d %H:%M')
+    if category_name == '쿠폰':
+        res = f"쿠폰 {title}이 {noti_date}에 만료"
+    elif category_name == '교통':
+        res = f"{to_location} 행 {type} {noti_date} 탑승"
+    elif category_name == '엔터테인먼트':
+        res = f"{title} 관람 {noti_date} 시작"
+    else:
+        res = f"특별한 일정이 {noti_date}에 있습니다"
+    return res
+
 class ScreenshotService:
     @inject
     def __init__(self,
@@ -110,7 +130,15 @@ class ScreenshotService:
                 notification_time=notification,
                 time_description=get_time_description(notification),
                 is_sent=False,
-                message=f"{category.name if category else "??"} 알림 {notification.strftime('%Y-%m-%d %H:%M')}",
+                message=get_notification_message(
+                    category_name=category.name if category else None, 
+                    title=title,
+                    to_location=to_location,
+                    from_location=from_location,
+                    type=type,
+                    description=description,
+                    notification=notification,
+                ),
                 created_at=datetime.now(),
                 updated_at=datetime.now()
             ))
