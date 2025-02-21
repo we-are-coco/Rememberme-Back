@@ -46,7 +46,10 @@ class NotificationService:
 
     def mark_notification_as_sent(self, user_id: str, notification_id: str):
         """ 특정 알림을 '보낸 상태'로 변경 """
-        return self.repo.mark_notification_as_sent(user_id, notification_id)
+        noti = self.repo.mark_notification_as_sent(user_id, notification_id)
+        if not noti:
+            raise HTTPException(status_code=422, detail="Notification not found")
+        return noti
 
     def get_pending_notifications(self):
         """ 전송되지 않은 알림 조회 """
