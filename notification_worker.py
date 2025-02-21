@@ -14,13 +14,13 @@ def download_fcm():
     storage.download_image("rememberme_fcm.json", "./rememberme_fcm.json")
 
 
-def send_push_notification(notification: dict):
+def send_push_notification(fcm_token, notification: dict):
     message = messaging.Message(
         notification=messaging.Notification(
             title="RememberMe 알림",
-            body=notification.message
+            body=notification.get("message")
         ),
-        token=notification.fcm_token
+        token=fcm_token
     )
 
     response = messaging.send(message)

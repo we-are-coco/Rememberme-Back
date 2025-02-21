@@ -97,3 +97,10 @@ class UserService:
         if not user:
             user = self.create_user(name, email, None)
         return create_access_token(payload={"user_id": user.id}, role=Role.USER)
+
+    def send_test_alert(self, user_id: str, message: str):
+        from notification_worker import send_push_notification
+        """ 테스트 알림 보내기 """
+        user = self.user_repo.find_by_id(user_id)
+        send_push_notification(user.fcm_token, {"message": f"Hi {user.name}! message: {message}"})
+        return {"message": "success"}

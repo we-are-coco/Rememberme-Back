@@ -111,3 +111,14 @@ def kakao_login(
 ):
     access_token = user_service.kakao_login(access_token)
     return {"access_token": access_token, "token_type": "bearer"}
+
+
+@router.post("/test_alert")
+@inject
+def test_alert(
+    current_user: Annotated[CurrentUser, Depends(get_current_user)],
+    message: str,
+    service: UserService = Depends(Provide[Container.user_service])
+) -> dict:
+    service.send_test_alert(current_user.id, message)
+    return {"message": "success"}
