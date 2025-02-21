@@ -27,7 +27,7 @@ def send_push_notification(fcm_token, notification: dict):
     print("Successfully sent message:", response)
 
 
-@repeat_every(seconds=300)
+@repeat_every(seconds=30)
 def check_and_send_notifications():
     print("🔔 Checking for pending notifications...")
     notification_repo = NotificationRepository()
