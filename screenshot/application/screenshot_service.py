@@ -18,6 +18,7 @@ from utils.ai import extract_data_from_screenshots
 from collections import defaultdict
 from dataclasses import asdict
 from pydub import AudioSegment
+import pytz
 
 
 def get_notification_message(
@@ -29,7 +30,9 @@ def get_notification_message(
         description: str, 
         notification: datetime
     ) -> str:
-    noti_date = datetime.strftime(notification, '%m-%d %H:%M')
+    # Convert UTC datetime to Asia/Seoul timezone
+    notification_with_tz = notification.astimezone(pytz.timezone('Asia/Seoul'))
+    noti_date = datetime.strftime(notification_with_tz, '%m-%d %H:%M')
     if category_name == '쿠폰':
         res = f"쿠폰 {title}이 {noti_date}에 만료"
     elif category_name == '교통':
@@ -149,7 +152,7 @@ class ScreenshotService:
             category_id=category.id if category else None,
             url=url,
             start_date=start_date,
-            end_date=datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M"),
+            end_date=datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M").astimezone(pytz.timezone('Asia/Seoul')),
             price=price,
             code=code,
             user_id=user_id,
@@ -212,13 +215,15 @@ class ScreenshotService:
             "location": location,
             "details": details,
             "start_date": start_date,
-            "end_date": datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M"),
+            "end_date": datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M").astimezone(pytz.timezone('Asia/Seoul')),
             "is_used": is_used,
         }
 
         for field, value in fields_to_update.items():
             if value is not None:
                 setattr(screenshot, field, value)
+
+        category = self.category_repo.find_by_id(category_id)
 
         if notifications is not None:
             self.notification_repo.delete_all(user_id=user_id, screenshot_id=screenshot_id)
@@ -231,7 +236,15 @@ class ScreenshotService:
                     notification_time=notification,
                     time_description=get_time_description(notification),
                     is_sent=False,
-                    message=f"{screenshot.category.name} 알림 {notification.strftime('%Y-%m-%d %H:%M')}",
+                    message=get_notification_message(
+                        category_name=category.name if category else None, 
+                        title=title,
+                        to_location=to_location,
+                        from_location=from_location,
+                        type=type,
+                        description=description,
+                        notification=notification,
+                    ),
                     created_at=datetime.now(),
                     updated_at=datetime.now()
                 ))
