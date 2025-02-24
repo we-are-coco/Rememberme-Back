@@ -34,7 +34,7 @@ def get_notification_message(
     notification_with_tz = notification.astimezone(pytz.timezone('Asia/Seoul'))
     noti_date = datetime.strftime(notification_with_tz, '%m-%d %H:%M')
     if category_name == '쿠폰':
-        res = f"쿠폰 {title}이 {noti_date}에 만료"
+        res = f"쿠폰 {title} {noti_date} 만료"
     elif category_name == '교통':
         res = f"{to_location} 행 {type} {noti_date} 탑승"
     elif category_name == '엔터테인먼트':
