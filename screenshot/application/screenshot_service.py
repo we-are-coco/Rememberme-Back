@@ -223,7 +223,7 @@ class ScreenshotService:
             if value is not None:
                 setattr(screenshot, field, value)
 
-        category = self.category_repo.find_by_id(category_id)
+        category = self.category_repo.get_category(category_id)
 
         if notifications is not None:
             self.notification_repo.delete_all(user_id=user_id, screenshot_id=screenshot_id)
