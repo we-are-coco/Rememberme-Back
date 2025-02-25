@@ -22,7 +22,7 @@ class AImodule:
             # .env 파일에서 API 키 가져오기
             self.subscription_key = settings.azure_api_key
             if not self.subscription_key:
-                self.subscription_key = input("Azure OpenAI API 키를 입력하세요: ")
+                raise ValueError("API 키가 설정되지 않았습니다.")
                 
         self.endpoint_url = "https://team2openainorthcentralus.openai.azure.com/"
         self.deployment_name = "gpt-4o"
@@ -77,7 +77,8 @@ class AImodule:
             frequency_penalty=0,
             presence_penalty=0,
             stop=None,
-            stream=False
+            stream=False,
+            timeout=50,
         )
 
         return completion.choices[0].message.content

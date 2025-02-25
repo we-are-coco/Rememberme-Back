@@ -20,6 +20,7 @@ class Settings(BaseSettings):
     keyword_endpoint: str
 
     gpt_audio_key: str
+    gpt_audio_api: str
 
 
 @lru_cache

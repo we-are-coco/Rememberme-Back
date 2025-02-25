@@ -14,7 +14,7 @@ def azure_audio_request(file_path):
         encoded_string = base64.b64encode(wav_bytes).decode('utf-8')
 
         # Azure OpenAI 설정
-        endpoint = "https://team2-openai-eastus2.openai.azure.com/openai/deployments/gpt-4o-audio-preview/chat/completions?api-version=2025-01-01-preview"
+        endpoint = settings.gpt_audio_api
         api_key = settings.gpt_audio_key
         client = AzureOpenAI(
             api_version="2025-01-01-preview",
@@ -23,9 +23,10 @@ def azure_audio_request(file_path):
         )
 
         completion = client.chat.completions.create(
-            model="gpt-4o-mini-audio-preview",
+            model="gpt-4o-audio-preview",
             modalities=["text", "audio"],
             audio={"voice": "alloy", "format": "wav"},
+            timeout=50,
             messages=[
                 {
                     "role": "user",
