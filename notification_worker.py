@@ -15,16 +15,19 @@ def download_fcm():
 
 
 def send_push_notification(fcm_token, notification: dict):
-    message = messaging.Message(
-        notification=messaging.Notification(
-            title="RememberMe 알림",
-            body=notification.get("message")
-        ),
-        token=fcm_token
-    )
+    try:
+        message = messaging.Message(
+            notification=messaging.Notification(
+                title="RememberMe 알림",
+                body=notification.get("message")
+            ),
+            token=fcm_token
+        )
 
-    response = messaging.send(message)
-    print("Successfully sent message:", response)
+        response = messaging.send(message)
+        print("Successfully sent message:", response)
+    except Exception as e:
+        print("Failed to send push notification:", e)
 
 
 @repeat_every(seconds=30)
